@@ -1,0 +1,512 @@
+model RecurringCashflow {
+  id          String    @id @default(uuid())
+  userId      String
+  amount      Float
+  category    String // food, rent, utilities, etc.
+  type        String // income, spend, investment
+  description String?
+  frequency   String // daily, weekly, monthly
+  startDate   DateTime
+  endDate     DateTime?
+  nextRun     DateTime // When the next auto-transaction should be created
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_cashflows")
+}
+
+model DailyMutualFundNav {
+  id         String   @id @default(uuid())
+  schemeCode String
+  date       DateTime @db.Date
+  nav        Float
+  source     String   @default("api") // api, manual, fallback
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([schemeCode, date])
+  @@map("daily_mutual_fund_navs")
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  mobile    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  stocks             Stock[]
+  mutualFunds        MutualFund[]
+  sips               SIP[]
+  goals              Goal[]
+  bankAccounts       BankAccount[]
+  fixedDeposits      FixedDeposit[]
+  recurringDeposits  RecurringDeposit[]
+  bonds              Bond[]
+  // licPolicies       LIC[]
+  ppfAccounts       PPF[]
+  npsAccounts       NPS[]
+  gold               Gold[]
+  realEstate         RealEstate[]
+  epfAccounts        EPF[]
+  crypto             Crypto[]
+  transactions       Transaction[]
+  cashflows          Cashflow[]
+  liabilities        Liability[]
+  lendMoney          LendMoney[]
+  borrowedMoney      BorrowedMoney[]
+  recurringCashflows RecurringCashflow[]
+  trackRecords       TrackRecord[]
+
+  @@map("users")
+}
+
+model TrackRecord {
+  id               String   @id @default(uuid())
+  userId           String
+  snapshotDate     DateTime @db.Date
+  netWorth         Float
+  totalAssets      Float
+  totalLiabilities Float
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snapshotDate])
+  @@map("track_records")
+}
+
+model Goal {
+  id            String   @id @default(uuid())
+  userId        String
+  name          String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  targetDate    DateTime
+  category      String? // retirement, education, house, etc.
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  stocks            Stock[]
+  mutualFunds       MutualFund[]
+  sips              SIP[]
+  bankAccounts      BankAccount[]
+  fixedDeposits     FixedDeposit[]
+  recurringDeposits RecurringDeposit[]
+  bonds             Bond[]
+  // licPolicies       LIC[]
+  ppfAccounts       PPF[]
+  npsAccounts       NPS[]
+  gold              Gold[]
+  realEstate        RealEstate[]
+  epfAccounts       EPF[]
+  crypto            Crypto[]
+
+  @@map("goals")
+}
+model PPF {
+  id          String   @id @default(uuid())
+  userId      String
+  goalId      String?
+  balance     Float
+  lastUpdated DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("ppf_accounts")
+}
+
+model NPS {
+  id          String   @id @default(uuid())
+  userId      String
+  goalId      String?
+  balance     Float
+  lastUpdated DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("nps_accounts")
+}
+
+model Stock {
+  id                String    @id @default(uuid())
+  userId            String
+  goalId            String?
+  symbol            String // e.g., "RELIANCE.NS" or "500325.BO"
+  companyName       String
+  exchange          String // NSE or BSE
+  quantity          Float
+  averagePrice      Float
+  currentPrice      Float?
+  investedAmount    Float
+  currentValue      Float?
+  returns           Float?
+  returnsPercentage Float?
+  lastUpdated       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("stocks")
+}
+
+model MutualFund {
+  id                String    @id @default(uuid())
+  userId            String
+  goalId            String?
+  schemeCode        String
+  schemeName        String
+  amcName           String?
+  units             Float
+  averageNav        Float
+  currentNav        Float?
+  investedAmount    Float
+  currentValue      Float?
+  returns           Float?
+  returnsPercentage Float?
+  lastUpdated       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  sips SIP[]
+
+  @@map("mutual_funds")
+}
+
+model SIP {
+  id                String   @id @default(uuid())
+  userId            String
+  mfId              String
+  goalId            String?
+  amount            Float
+  startDate         DateTime
+  frequency         String   @default("monthly") // monthly, quarterly
+  nextExecutionDate DateTime
+  status            String   @default("active") // active, paused, stopped
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mutualFund MutualFund @relation(fields: [mfId], references: [id], onDelete: Cascade)
+  goal       Goal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("sips")
+}
+
+model BankAccount {
+  id          String   @id @default(uuid())
+  userId      String
+  goalId      String?
+  bankName    String
+  accountType String // Savings, Current
+  balance     Float
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("bank_accounts")
+}
+
+model FixedDeposit {
+  id             String   @id @default(uuid())
+  userId         String
+  goalId         String?
+  bankName       String
+  amount         Float
+  interestRate   Float
+  startDate      DateTime
+  maturityDate   DateTime
+  maturityAmount Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("fixed_deposits")
+}
+
+model RecurringDeposit {
+  id             String   @id @default(uuid())
+  userId         String
+  goalId         String?
+  bankName       String
+  monthlyAmount  Float
+  interestRate   Float
+  startDate      DateTime
+  maturityDate   DateTime
+  tenure         Int // in months
+  maturityAmount Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("recurring_deposits")
+}
+
+model Bond {
+  id           String    @id @default(uuid())
+  userId       String
+  goalId       String?
+  issuer       String
+  bondType     String
+  faceValue    Float
+  units        Float
+  couponRate   Float
+  maturityDate DateTime
+  currentValue Float?
+  lastUpdated  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("bonds")
+}
+
+model Gold {
+  id     String  @id @default(uuid())
+  userId String
+  goalId String?
+  type   String // physical, digital, etf
+  name   String? // Name/description (e.g., "Wedding Necklace", "SBI Gold ETF")
+
+  // For Physical & Digital Gold
+  quantityGrams       Float?
+  purity              String? // 24K, 22K, 18K
+  averagePricePerGram Float?
+  currentPricePerGram Float?
+  makingCharges       Float? // For jewelry
+  storageLocation     String? // For physical: "Home Safe", "Bank Locker" / For digital: "Paytm", "PhonePe"
+
+  // For Gold ETF
+  schemeName String? // ETF scheme name
+  schemeCode String? // ETF code/symbol
+  units      Float? // ETF units
+  averageNav Float? // Average NAV
+  currentNav Float? // Current NAV
+
+  // Common fields
+  investedAmount    Float // Total amount invested
+  currentValue      Float?
+  returns           Float?
+  returnsPercentage Float?
+  lastUpdated       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("gold")
+}
+
+model RealEstate {
+  id            String    @id @default(uuid())
+  userId        String
+  goalId        String?
+  liabilityId   String? // Link to home loan if financed
+  propertyType  String
+  location      String
+  purchasePrice Float
+  purchaseDate  DateTime
+  currentValue  Float?
+  lastUpdated   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal      Goal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  liability Liability? @relation(fields: [liabilityId], references: [id], onDelete: SetNull)
+
+  @@map("real_estate")
+}
+
+model EPF {
+  id          String    @id @default(uuid())
+  userId      String
+  goalId      String?
+  balance     Float
+  lastUpdated DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("epf_accounts")
+}
+
+model Crypto {
+  id           String    @id @default(uuid())
+  userId       String
+  goalId       String?
+  coinName     String
+  symbol       String
+  quantity     Float
+  averagePrice Float
+  currentPrice Float?
+  currentValue Float?
+  lastUpdated  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("crypto")
+}
+
+model Transaction {
+  id              String   @id @default(uuid())
+  userId          String
+  assetType       String // stock, mutual_fund, bank, etc.
+  assetId         String
+  transactionType String // buy, sell, deposit, withdrawal
+  amount          Float
+  date            DateTime
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Liability {
+  id              String    @id @default(uuid())
+  userId          String
+  name            String
+  type            String // home_loan, car_loan, personal_loan, credit_card, other
+  principalAmount Float
+  currentBalance  Float
+  interestRate    Float
+  emiAmount       Float?
+  startDate       DateTime
+  endDate         DateTime?
+  lender          String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  realEstates RealEstate[]
+
+  @@map("liabilities")
+}
+
+model LendMoney {
+  id             String    @id @default(uuid())
+  userId         String
+  borrowerName   String
+  amount         Float
+  interestRate   Float?    @default(0)
+  lendDate       DateTime
+  returnDate     DateTime?
+  status         String    @default("pending") // pending, partially_returned, fully_returned
+  amountReturned Float     @default(0)
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("lend_money")
+}
+
+model BorrowedMoney {
+  id             String    @id @default(uuid())
+  userId         String
+  lenderName     String
+  amount         Float
+  interestRate   Float?    @default(0)
+  borrowDate     DateTime
+  returnDate     DateTime?
+  status         String    @default("pending") // pending, partially_returned, fully_returned
+  amountReturned Float     @default(0)
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("borrowed_money")
+}
+
+model Cashflow {
+  id          String   @id @default(uuid())
+  userId      String
+  amount      Float
+  category    String // food, transport, utilities, entertainment, healthcare, education, shopping, bills, investment, other
+  type        String // income, spend, investment
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cashflows")
+}
+
+model DailyGoldPrice {
+  id        String   @id @default(uuid())
+  date      DateTime @unique @db.Date // Store only date part
+  price24K  Float // Price per gram for 24K gold in INR
+  price22K  Float // Price per gram for 22K gold in INR
+  price18K  Float // Price per gram for 18K gold in INR
+  source    String   @default("api") // api, manual, fallback
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("daily_gold_prices")
+}
+
+model DailyStockPrice {
+  id        String   @id @default(uuid())
+  symbol    String
+  date      DateTime @db.Date
+  price     Float
+  source    String   @default("api") // api, manual, fallback
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([symbol, date])
+  @@map("daily_stock_prices")
+}
