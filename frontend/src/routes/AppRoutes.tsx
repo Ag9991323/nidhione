@@ -6,6 +6,7 @@ import TrackRecordPage from '@/features/trackRecord/TrackRecordPage';
 import AuthLayout from '@/layouts/AuthLayout';
 import Login from '@/features/auth/Login';
 import Register from '@/features/auth/Register';
+import GoogleCallback from '@/features/auth/GoogleCallback';
 import Dashboard from '@/features/dashboard/Dashboard';
 import Assets from '@/features/assets/Assets';
 import StocksList from '@/features/stocks/StocksList';
@@ -63,6 +64,14 @@ export default function AppRoutes() {
             element={
               <PublicRoute>
                 <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="login/google/callback"
+            element={
+              <PublicRoute>
+                <GoogleCallback />
               </PublicRoute>
             }
           />
