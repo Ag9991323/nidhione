@@ -43,6 +43,7 @@ export interface StockSearchResult {
   name: string;
   exchange: string;
   type: string;
+  price?: number | null;
 }
 
 export const stocksAPI = createApi({

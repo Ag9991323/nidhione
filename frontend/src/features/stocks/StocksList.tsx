@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -21,6 +21,9 @@ import { useGetGoalsQuery } from '@/features/goals/goalsAPI';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 import { debounce } from 'lodash';
 
+const RECENT_SEARCHES_KEY = 'stocks_recent_searches';
+const RECENT_SEARCHES_LIMIT = 5;
+
 export default function StocksList() {
   const { data, isLoading } = useGetStocksQuery();
   const { data: goalsData } = useGetGoalsQuery();
@@ -40,6 +43,18 @@ export default function StocksList() {
     averagePrice: '',
     goalId: '',
   });
+  const [inputValue, setInputValue] = useState('');
+  const [exchangeFilter, setExchangeFilter] = useState<'ALL' | 'NSE' | 'BSE'>('ALL');
+  const [recentSearches, setRecentSearches] = useState<StockSearchResult[]>(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -52,11 +67,19 @@ export default function StocksList() {
   );
 
   const handleStockSearch = (_event: React.SyntheticEvent, value: string) => {
+    setInputValue(value);
     debouncedSearch(value);
   };
 
   const handleStockSelect = (_event: React.SyntheticEvent, value: string | StockSearchResult | null) => {
     if (value && typeof value !== 'string') {
+      const nextRecent = [
+        value,
+        ...recentSearches.filter((item) => item.symbol !== value.symbol),
+      ].slice(0, RECENT_SEARCHES_LIMIT);
+      setRecentSearches(nextRecent);
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(nextRecent));
+
       setSelectedStock(value);
       setFormData({
         ...formData,
@@ -70,11 +93,13 @@ export default function StocksList() {
   const handleOpen = () => {
     setOpen(true);
     setSelectedStock(null);
+    setInputValue('');
   };
   const handleClose = () => {
     setOpen(false);
     setEditingId(null);
     setSelectedStock(null);
+    setInputValue('');
     setFormData({
       symbol: '',
       companyName: '',
@@ -138,6 +163,30 @@ export default function StocksList() {
       }
     }
   };
+  const stocks = data?.stocks || [];
+  const searchOptions = useMemo(() => {
+    const results = searchResults?.results || [];
+    const normalized = inputValue.trim().toLowerCase();
+    const withFilter = results.filter((item) => {
+      if (exchangeFilter === 'ALL') return true;
+      return item.exchange === exchangeFilter;
+    });
+    const scored = withFilter.map((item) => {
+      const symbol = item.symbol.toLowerCase();
+      const name = item.name.toLowerCase();
+      let score = 4;
+      if (normalized && symbol === normalized) score = 0;
+      else if (normalized && symbol.startsWith(normalized)) score = 1;
+      else if (normalized && name.startsWith(normalized)) score = 2;
+      else if (normalized && (symbol.includes(normalized) || name.includes(normalized))) score = 3;
+      return { item, score };
+    });
+    return scored.sort((a, b) => a.score - b.score).map((entry) => entry.item);
+  }, [searchResults, inputValue, exchangeFilter]);
+
+  const recentFiltered =
+    exchangeFilter === 'ALL' ? recentSearches : recentSearches.filter((item) => item.exchange === exchangeFilter);
+  const displayOptions = inputValue.trim().length >= 2 ? searchOptions : recentFiltered;
 
   if (isLoading) {
     return (
@@ -146,8 +195,6 @@ export default function StocksList() {
       </Box>
     );
   }
-
-  const stocks = data?.stocks || [];
 
   return (
     <Box>
@@ -243,7 +290,7 @@ export default function StocksList() {
             {!editingId && (
               <Autocomplete
                 freeSolo
-                options={searchResults?.results || []}
+                options={displayOptions}
                 getOptionLabel={(option) =>
                   typeof option === 'string' ? option : `${option.name} (${option.symbol})`
                 }
@@ -251,13 +298,21 @@ export default function StocksList() {
                 onInputChange={handleStockSearch}
                 onChange={handleStockSelect}
                 value={selectedStock}
+                inputValue={inputValue}
+                autoHighlight
+                openOnFocus
+                noOptionsText="No results. Try symbol or full name."
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Search Stock"
                     placeholder="Type to search (e.g., Tata, Reliance)"
                     required
-                    helperText="Search by company name or symbol"
+                    helperText={
+                      inputValue.trim().length < 2
+                        ? 'Recent searches'
+                        : 'Search by company name or symbol'
+                    }
                     InputProps={{
                       ...params.InputProps,
                       endAdornment: (
@@ -271,17 +326,47 @@ export default function StocksList() {
                 )}
                 renderOption={(props, option) => (
                   <li {...props} key={option.symbol}>
-                    <Box>
-                      <Typography variant="body2" fontWeight="bold">
-                        {option.name}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {option.symbol} • {option.exchange}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                      <Box>
+                        <Typography variant="body2" fontWeight="bold">
+                          {option.name}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {option.symbol} • {option.exchange}
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" fontWeight="bold" color="text.primary" sx={{ whiteSpace: 'nowrap' }}>
+                        {typeof option.price === 'number' ? formatCurrency(option.price) : '-'}
                       </Typography>
                     </Box>
                   </li>
                 )}
               />
+            )}
+            {!editingId && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Chip
+                  label="All"
+                  color={exchangeFilter === 'ALL' ? 'primary' : 'default'}
+                  variant={exchangeFilter === 'ALL' ? 'filled' : 'outlined'}
+                  onClick={() => setExchangeFilter('ALL')}
+                  size="small"
+                />
+                <Chip
+                  label="NSE"
+                  color={exchangeFilter === 'NSE' ? 'primary' : 'default'}
+                  variant={exchangeFilter === 'NSE' ? 'filled' : 'outlined'}
+                  onClick={() => setExchangeFilter('NSE')}
+                  size="small"
+                />
+                <Chip
+                  label="BSE"
+                  color={exchangeFilter === 'BSE' ? 'primary' : 'default'}
+                  variant={exchangeFilter === 'BSE' ? 'filled' : 'outlined'}
+                  onClick={() => setExchangeFilter('BSE')}
+                  size="small"
+                />
+              </Box>
             )}
             {editingId && (
               <>
