@@ -9,10 +9,12 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  Divider,
 } from '@mui/material';
 import { useLoginMutation } from './authAPI';
 import { useAppDispatch } from '@/app/hooks';
 import { setCredentials } from './authSlice';
+import { generateCodeChallenge, generateCodeVerifier } from './pkce';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,6 +23,7 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +36,32 @@ export default function Login() {
     } catch (err: any) {
       setError(err?.data?.error || 'Login failed. Please try again.');
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+
+    if (!googleClientId) {
+      setError('Google login is not configured.');
+      return;
+    }
+
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    sessionStorage.setItem('google_code_verifier', codeVerifier);
+
+    const redirectUri = `${window.location.origin}/login/google/callback`;
+    const params = new URLSearchParams({
+      client_id: googleClientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256',
+      prompt: 'select_account',
+    });
+
+    window.location.assign(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
   };
 
   return (
@@ -83,6 +112,17 @@ export default function Login() {
             sx={{ mt: 3, mb: 2 }}
           >
             {isLoading ? <CircularProgress size={24} /> : 'Login'}
+          </Button>
+
+          <Divider sx={{ my: 2 }}>or</Divider>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            size="large"
+            onClick={handleGoogleLogin}
+          >
+            Continue with Google
           </Button>
 
           <Typography variant="body2" align="center">

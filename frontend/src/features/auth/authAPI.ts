@@ -25,6 +25,12 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface GoogleLoginRequest {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+}
+
 export const authAPI = createApi({
   reducerPath: 'authAPI',
   baseQuery: fetchBaseQuery({
@@ -52,10 +58,22 @@ export const authAPI = createApi({
         body: userData,
       }),
     }),
+    googleLogin: builder.mutation<AuthResponse, GoogleLoginRequest>({
+      query: (payload) => ({
+        url: '/google',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
     getProfile: builder.query<{ user: AuthResponse['user'] }, void>({
       query: () => '/profile',
     }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useGetProfileQuery } = authAPI;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGoogleLoginMutation,
+  useGetProfileQuery,
+} = authAPI;
