@@ -29,6 +29,7 @@ import {
   Calculate as CalculateIcon,
   Settings as SettingsIcon,
   Receipt as ReceiptIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { logout, selectCurrentUser } from '@/features/auth/authSlice';
@@ -40,6 +41,7 @@ const menuItems = [
   { text: 'Assets', icon: <AssetsIcon />, path: '/assets' },
   { text: 'Liabilities', icon: <LiabilitiesIcon />, path: '/liabilities' },
   { text: 'Cashflow', icon: <ReceiptIcon />, path: '/cashflows' },
+  { text: 'Import', icon: <CloudUploadIcon />, path: '/import' },
   { text: 'Track Record', icon: <SettingsIcon />, path: '/track-record' },
   { text: 'Goals', icon: <GoalsIcon />, path: '/goals' },
   { text: 'Calculators', icon: <CalculateIcon />, path: '/calculators' },

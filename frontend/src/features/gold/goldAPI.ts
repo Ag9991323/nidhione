@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Keep `VITE_API_URL` consistent across the app:
+// - In dev it defaults to `http://localhost:3000/api`
+// - In prod set it to `https://<backend-domain>/api`
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export interface GoldAsset {
   id: string;
@@ -78,7 +81,7 @@ export interface UpdateGoldRequest {
 export const goldAPI = createApi({
   reducerPath: 'goldAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_URL}/api/gold`,
+    baseUrl: `${baseUrl}/gold`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {

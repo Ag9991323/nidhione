@@ -94,6 +94,9 @@ export async function changePassword(request: FastifyRequest, reply: FastifyRepl
     if (!user) {
       return reply.code(404).send({ error: 'User not found' });
     }
+    if (!user.password) {
+      return reply.code(400).send({ error: 'Password login is not enabled for this account' });
+    }
     
     // Verify current password
     const isValidPassword = await bcrypt.compare(data.currentPassword, user.password);

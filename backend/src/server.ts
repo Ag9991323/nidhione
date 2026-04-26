@@ -7,6 +7,7 @@ import { authenticate } from './middleware/auth';
 
 // Routes
 import { authRoutes } from './routes/auth.routes';
+import { importRoutes } from './routes/import.routes';
 import { stocksRoutes } from './routes/stocks.routes';
 import { mutualFundsRoutes } from './routes/mutualFunds.routes';
 import { dashboardRoutes } from './routes/dashboard.routes';
@@ -67,6 +68,7 @@ async function start() {
 
     // Register routes
     await fastify.register(authRoutes, { prefix: '/api/auth' });
+    await fastify.register(importRoutes, { prefix: '/api/import' });
     await fastify.register(stocksRoutes, { prefix: '/api/stocks' });
     await fastify.register(mutualFundsRoutes, { prefix: '/api/mutual-funds' });
     await fastify.register(dashboardRoutes, { prefix: '/api/dashboard' });
