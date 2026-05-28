@@ -39,7 +39,7 @@ export async function getAllStocks(request: FastifyRequest, reply: FastifyReply)
 
     // Fetch daily price for each stock symbol (in parallel)
     const stocksWithCurrent = await Promise.all(
-      stocks.map(async (stock: typeof prisma.stock) => {
+      stocks.map(async (stock) => {
         const currentPrice = await getDailyStockPrice(stock.symbol);
         const currentValue = currentPrice ? stock.quantity * currentPrice : stock.investedAmount;
         return {

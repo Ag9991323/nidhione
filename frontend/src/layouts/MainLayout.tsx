@@ -29,6 +29,7 @@ import {
   Calculate as CalculateIcon,
   Settings as SettingsIcon,
   Receipt as ReceiptIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { logout, selectCurrentUser } from '@/features/auth/authSlice';
@@ -40,6 +41,7 @@ const menuItems = [
   { text: 'Assets', icon: <AssetsIcon />, path: '/assets' },
   { text: 'Liabilities', icon: <LiabilitiesIcon />, path: '/liabilities' },
   { text: 'Cashflow', icon: <ReceiptIcon />, path: '/cashflows' },
+  { text: 'Import', icon: <CloudUploadIcon />, path: '/import' },
   { text: 'Track Record', icon: <SettingsIcon />, path: '/track-record' },
   { text: 'Goals', icon: <GoalsIcon />, path: '/goals' },
   { text: 'Calculators', icon: <CalculateIcon />, path: '/calculators' },
@@ -70,10 +72,10 @@ export default function MainLayout() {
     navigate('/login');
   };
 
-  const drawer = (
+const drawer = (
     <Box sx={{ 
       height: '100%',
-      background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
+      backgroundColor: '#0f172a',
       pt: 3,
       pb: 2,
     }}>
@@ -106,7 +108,7 @@ export default function MainLayout() {
               sx={{ 
                 color: 'white',
                 fontWeight: 700,
-                letterSpacing: 0.3,
+                letterSpacing: 0.2,
               }}
             >
               {user?.name}
@@ -138,21 +140,19 @@ export default function MainLayout() {
                 borderRadius: 2,
                 py: 1.5,
                 px: 2,
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.2s ease',
                 color: location.pathname === item.path 
                   ? 'white' 
                   : 'rgba(255, 255, 255, 0.8)',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                  transform: 'translateX(4px)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
                   color: 'white',
                 },
                 '&.Mui-selected': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                  boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)',
                   '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   },
                   '&::before': {
                     content: '""',
@@ -162,7 +162,7 @@ export default function MainLayout() {
                     transform: 'translateY(-50%)',
                     width: 4,
                     height: '60%',
-                    backgroundColor: 'white',
+                    backgroundColor: '#3b82f6',
                     borderRadius: '0 4px 4px 0',
                   },
                 },
@@ -185,7 +185,7 @@ export default function MainLayout() {
                 primaryTypographyProps={{
                   fontWeight: location.pathname === item.path ? 700 : 500,
                   fontSize: '0.95rem',
-                  letterSpacing: 0.3,
+                  letterSpacing: 0.2,
                 }}
               />
             </ListItemButton>
@@ -204,8 +204,7 @@ export default function MainLayout() {
           p: 2,
           borderRadius: 2,
           background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
         }}>
           <Typography 
             variant="caption" 
@@ -242,9 +241,10 @@ export default function MainLayout() {
         sx={{ 
           zIndex: (theme) => theme.zIndex.drawer + 1, 
           borderRadius: 0,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#ffffff',
+          color: 'text.primary',
+          borderBottom: '1px solid #e2e8f0',
+          boxShadow: '0 6px 16px rgba(15, 23, 42, 0.05)',
         }}
       >
         <Toolbar>
@@ -260,16 +260,15 @@ export default function MainLayout() {
           <Typography variant="h6" noWrap component="div" color="inherit" fontWeight="bold" sx={{ 
             mr: 3,
             fontSize: '1.3rem',
-            letterSpacing: 0.5,
-            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+            letterSpacing: 0.3,
           }}>
-            💰 NidhiOne
+            NidhiOne
           </Typography>
           <Typography variant="h6" noWrap component="div" sx={{ 
             flexGrow: 1,
-            fontSize: '0.95rem',
+            fontSize: '0.9rem',
             fontWeight: 500,
-            opacity: 0.95,
+            color: 'text.secondary',
           }}>
             Wealth Management
           </Typography>
@@ -277,18 +276,13 @@ export default function MainLayout() {
             onClick={handleMenuClick} 
             sx={{ 
               p: 0.5,
-              transition: 'transform 0.2s ease',
-              '&:hover': {
-                transform: 'scale(1.05)',
-              },
+              border: '1px solid #e2e8f0',
             }}
           >
             <Avatar sx={{ 
-              bgcolor: 'rgba(255, 255, 255, 0.25)',
+              bgcolor: '#1e3a8a',
               color: 'white',
-              border: '2px solid rgba(255, 255, 255, 0.4)',
               fontWeight: 700,
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
             }}>
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </Avatar>
@@ -302,7 +296,8 @@ export default function MainLayout() {
               sx: {
                 mt: 1.5,
                 borderRadius: 2,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 12px 24px rgba(15, 23, 42, 0.08)',
                 minWidth: 200,
               },
             }}
@@ -313,7 +308,7 @@ export default function MainLayout() {
                 <Typography variant="body2" fontWeight="600">
                   {user?.name}
                 </Typography>
-                <Typography variant="caption" color="textSecondary">
+                <Typography variant="caption" color="text.secondary">
                   {user?.email}
                 </Typography>
               </Box>
@@ -353,7 +348,8 @@ export default function MainLayout() {
                 height: 'calc(100% - 64px)',
                 borderRadius: 0,
                 border: 'none',
-                boxShadow: '4px 0 20px rgba(0, 0, 0, 0.1)',
+                boxShadow: '4px 0 16px rgba(15, 23, 42, 0.12)',
+                backgroundColor: '#0f172a',
               },
             }}
           >
@@ -371,7 +367,8 @@ export default function MainLayout() {
                 position: 'fixed',
                 borderRadius: 0,
                 border: 'none',
-                boxShadow: '4px 0 20px rgba(0, 0, 0, 0.08)',
+                boxShadow: '4px 0 16px rgba(15, 23, 42, 0.1)',
+                backgroundColor: '#0f172a',
               },
             }}
             open

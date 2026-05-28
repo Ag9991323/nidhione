@@ -65,74 +65,80 @@ export default function Login() {
   };
 
   return (
-    <Card>
-      <CardContent sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center" color="primary">
-          NidhiOne
-        </Typography>
-        <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-          Welcome Back
-        </Typography>
-
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            margin="normal"
-            autoComplete="email"
-          />
-
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            margin="normal"
-            autoComplete="current-password"
-          />
-
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            size="large"
-            disabled={isLoading}
-            sx={{ mt: 3, mb: 2 }}
-          >
-            {isLoading ? <CircularProgress size={24} /> : 'Login'}
-          </Button>
-
-          <Divider sx={{ my: 2 }}>or</Divider>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            onClick={handleGoogleLogin}
-          >
-            Continue with Google
-          </Button>
-
-          <Typography variant="body2" align="center">
-            Don't have an account?{' '}
-            <Link to="/register" style={{ color: '#1976d2', textDecoration: 'none' }}>
-              Register
-            </Link>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+        py: 6,
+      }}
+    >
+      <Card sx={{ width: '100%', maxWidth: 460 }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Typography variant="h4" component="h1" gutterBottom color="primary">
+            NidhiOne
           </Typography>
-        </Box>
-      </CardContent>
-    </Card>
+          <Typography variant="body2" color="text.secondary">
+            Sign in to your finance workspace
+          </Typography>
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              margin="normal"
+              autoComplete="email"
+            />
+
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              margin="normal"
+              autoComplete="current-password"
+            />
+
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={isLoading}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : 'Login'}
+            </Button>
+
+            <Divider sx={{ my: 2 }}>or</Divider>
+
+            <Button fullWidth variant="outlined" size="large" onClick={handleGoogleLogin}>
+              Continue with Google
+            </Button>
+
+            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+              Don't have an account?{' '}
+              <Link to="/register" style={{ color: '#1e3a8a', textDecoration: 'none' }}>
+                Register
+              </Link>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }

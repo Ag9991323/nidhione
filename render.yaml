@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: nidhione-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build && npx prisma migrate deploy
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nidhione-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        fromService:
+          type: static_site
+          name: nidhione-frontend
+          property: url
+      - key: PRICE_UPDATE_CRON
+        value: "0 */6 * * *"
+      - key: SIP_EXECUTION_CRON
+        value: "0 9 * * *"
+      - key: RECURRING_CASHFLOW_CRON
+        value: "0 1 * * *"
+    regions:
+      - oregon
+
+  - type: static_site
+    name: nidhione-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: nidhione-backend
+          property: url
+          suffix: /api
+    regions:
+      - oregon
+
+databases:
+  - name: nidhione-db
+    databaseName: nidhione
+    user: nidhione
+    region: oregon
+    plan: free
+    postgresSqlVersion: "15"

@@ -62,7 +62,7 @@ model User {
   fixedDeposits      FixedDeposit[]
   recurringDeposits  RecurringDeposit[]
   bonds              Bond[]
-  // licPolicies       LIC[]
+  licPolicies        LIC[]
   ppfAccounts       PPF[]
   npsAccounts       NPS[]
   gold               Gold[]
@@ -118,7 +118,7 @@ model Goal {
   fixedDeposits     FixedDeposit[]
   recurringDeposits RecurringDeposit[]
   bonds             Bond[]
-  // licPolicies       LIC[]
+  licPolicies       LIC[]
   ppfAccounts       PPF[]
   npsAccounts       NPS[]
   gold              Gold[]
@@ -302,6 +302,25 @@ model Bond {
   goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
 
   @@map("bonds")
+}
+
+model LIC {
+  id            String   @id @default(uuid())
+  userId        String
+  goalId        String?
+  policyNumber  String
+  policyName    String
+  sumAssured    Float
+  premiumAmount Float
+  maturityDate  DateTime
+  currentValue  Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@map("lic_policies")
 }
 
 model Gold {

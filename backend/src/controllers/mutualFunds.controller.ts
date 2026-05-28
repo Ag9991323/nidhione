@@ -40,7 +40,7 @@ export async function getAllMutualFunds(request: FastifyRequest, reply: FastifyR
 
     // Fetch daily NAV for each mutual fund (in parallel)
     const mutualFundsWithCurrent = await Promise.all(
-      mutualFunds.map(async (mf: typeof prisma.mutualFund) => {
+      mutualFunds.map(async (mf) => {
         const currentNav = await getDailyMutualFundNav(mf.schemeCode);
         const currentValue = currentNav ? mf.units * currentNav : mf.investedAmount;
         return {

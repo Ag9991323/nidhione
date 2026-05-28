@@ -27,6 +27,7 @@ import Calculators from '@/features/calculators/Calculators';
 import Profile from '@/features/profile/Profile';
 import CashflowList from '@/features/cashflows/CashflowList';
 import GoldList from '@/features/gold/GoldList';
+import ImportHoldings from '@/features/import/ImportHoldings';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -98,6 +99,7 @@ export default function AppRoutes() {
           <Route path="assets" element={<Assets />} />
           <Route path="stocks" element={<StocksList />} />
           <Route path="mutual-funds" element={<MutualFundsList />} />
+          <Route path="import" element={<ImportHoldings />} />
           <Route path="fixed-deposits" element={<FixedDepositsList />} />
           <Route path="bank-accounts" element={<BankAccountsList />} />
           <Route path="recurring-deposits" element={<RecurringDepositsList />} />
