@@ -1,4 +1,3 @@
 #!/bin/bash
-
-# Just run the server - Prisma should be generated during build
+npx prisma migrate deploy
 node dist/server.js
