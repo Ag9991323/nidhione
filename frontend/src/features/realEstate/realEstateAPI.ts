@@ -32,9 +32,9 @@ export interface CreateRealEstateData {
 }
 
 export const realEstateAPI = createApi({
-  reducerPa
+  reducerPath: 'realEstateAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000/api',
+    baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
