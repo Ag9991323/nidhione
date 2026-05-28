@@ -11,7 +11,7 @@ export async function getStockPrice(symbol: string): Promise<number | null> {
   try {
     // Yahoo Finance API v8
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
-    const response = await axios.get(url);
+    const response = await axios.get(url, { timeout: 5000 });
     
     const data = response.data;
     if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
@@ -21,6 +21,7 @@ export async function getStockPrice(symbol: string): Promise<number | null> {
     return null;
   } catch (error) {
     console.error(`Error fetching price for ${symbol}:`, error);
+    // Return null gracefully instead of crashing
     return null;
   }
 }

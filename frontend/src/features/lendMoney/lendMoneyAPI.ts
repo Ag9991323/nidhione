@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 export interface LendMoney {
   id: string;
   userId: string;
@@ -29,7 +31,7 @@ export interface CreateLendMoneyData {
 export const lendMoneyAPI = createApi({
   reducerPath: 'lendMoneyAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000/api',
+    baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {

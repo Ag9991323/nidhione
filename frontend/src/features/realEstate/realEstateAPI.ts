@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 export interface RealEstate {
   id: string;
   userId: string;
@@ -30,7 +32,7 @@ export interface CreateRealEstateData {
 }
 
 export const realEstateAPI = createApi({
-  reducerPath: 'realEstateAPI',
+  reducerPa
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:3000/api',
     prepareHeaders: (headers) => {
