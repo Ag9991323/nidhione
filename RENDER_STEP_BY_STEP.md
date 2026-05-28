@@ -32,6 +32,8 @@ Complete walkthrough using Render's web interface.
 4. **Click "Create Database"**
    - Wait ~1 minute for creation
 
+   
+
 5. **Copy Connection String**
    - In the database details page, find "Connections"
    - Copy the **External Database URL**
@@ -39,7 +41,7 @@ Complete walkthrough using Render's web interface.
    - **Keep this safe - you'll need it for the backend**
 
 ---
-
+postgresql://nidhione:FkSf8IIgFSbyHFVfbD6YhlXlnmxnUC5X@dpg-d8c6p18g4nts7389gpbg-a.oregon-postgres.render.com/nidhione
 ## 🔧 Step 2: Deploy Backend Web Service
 
 1. **From Dashboard, click "New"** → **"Web Service"**
@@ -58,14 +60,17 @@ Complete walkthrough using Render's web interface.
 
 4. **Build Command**
    ```
-   npm install && npm run build && npx prisma migrate deploy
+   npm install && npm run build
    ```
-   *(Installs deps, builds TypeScript, and runs database migrations)*
+   *(Installs dependencies and builds TypeScript)*
 
 5. **Start Command**
    ```
-   npm start
+   npx prisma migrate deploy && npm start
    ```
+   *(Runs migrations first, then starts the server)*
+   
+   **Note:** Pre-Deploy Command is only for paid instances. On free tier, migrations run at startup.
 
 6. **Click "Create Web Service"**
 
@@ -74,7 +79,7 @@ Complete walkthrough using Render's web interface.
    - Click on `nidhione-backend` service
    - Go to **"Environment"** tab
    - Click **"Add Environment Variable"** for each:
-
+FkSf8IIgFSbyHFVfbD6YhlXlnmxnUC5X@dpg-d8c6p18g4nts7389gpbg-a.oregon-postgres.render.com/nidhione`
    | Key | Value |
    |----|-------|
    | `DATABASE_URL` | `postgresql://nidhione:PASSWORD@HOST:5432/nidhione` *(paste your connection string)* |

@@ -1,10 +1,4 @@
 #!/bin/bash
 
-echo "Generating Prisma client..."
-npx prisma generate
-
-echo "Running database migrations..."
-npx prisma migrate deploy || echo "Migrations skipped or failed (this is ok)"
-
-echo "Starting server..."
+# Just run the server - Prisma should be generated during build
 node dist/server.js

@@ -1,23 +1,6 @@
 # 🚀 Render Deployment - Quick Reference
 
-## Option A: One-Click Infrastructure as Code (Recommended)
-
-### 1. Push to GitHub
-```bash
-git add render.yaml
-git commit -m "Add render.yaml config"
-git push
-```
-
-### 2. Deploy on Render
-1. Go to [render.com/github](https://render.com/github)
-2. Click **"New"** → **"Infrastructure as Code"**
-3. Select your `nidhione` repo
-4. Render deploys everything automatically! 🎉
-
----
-
-## Option B: Manual Deployment (UI)
+## Manual Deployment (UI) - Recommended
 
 ### Step 1: Create PostgreSQL Database
 ```
@@ -131,3 +114,4 @@ curl https://nidhione-backend.onrender.com/api/health
 ---
 
 See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for full guide!
+STEP_BY_STEP.md](RENDER_STEP_BY_STEP.md) for detailed UI walkthrough
