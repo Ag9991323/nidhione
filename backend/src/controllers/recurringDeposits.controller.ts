@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import prisma from '../config/database';
 import { z } from 'zod';
+import { calculateCurrentRDValue, calculateMaturityAmount } from '../utils/rdCalculations';
 
 const createRDSchema = z.object({
   bankName: z.string(),
@@ -39,7 +40,18 @@ export async function getAllRecurringDeposits(request: FastifyRequest, reply: Fa
       orderBy: { createdAt: 'desc' },
     });
     
-    return reply.send({ recurringDeposits });
+    // Calculate current value for each RD
+    const rdsWithCurrentValue = recurringDeposits.map((rd) => ({
+      ...rd,
+      currentValue: calculateCurrentRDValue(
+        rd.startDate,
+        rd.monthlyAmount,
+        rd.interestRate,
+        rd.tenure
+      ),
+    }));
+    
+    return reply.send({ recurringDeposits: rdsWithCurrentValue });
   } catch (error) {
     console.error('Get recurring deposits error:', error);
     return reply.code(500).send({ error: 'Internal server error' });
@@ -54,17 +66,20 @@ export async function createRecurringDeposit(request: FastifyRequest, reply: Fas
     const startDate = new Date(data.startDate);
     const maturityDate = new Date(data.maturityDate);
     
-    // Calculate maturity amount using RD formula
-    // M = P * n * (n + 1) * r / (2 * 12 * 100) + P * n
-    // Where: M = Maturity Amount, P = Monthly Installment, n = Number of quarters (tenure/3)
-    // Simplified: For monthly compounding
-    const n = data.tenure; // number of months
-    const r = data.interestRate;
-    const P = data.monthlyAmount;
+    // Calculate maturity amount using utility function
+    const maturityAmount = calculateMaturityAmount(
+      data.monthlyAmount,
+      data.interestRate,
+      data.tenure
+    );
     
-    // RD Maturity = P * [((1 + r/400)^(4n/12) - 1) / (1 - (1 + r/400)^(-1/3))]
-    // Simplified formula: M = P * n + P * n * (n + 1) * r / (2 * 12 * 100)
-    const maturityAmount = P * n + (P * n * (n + 1) * r) / (2 * 12 * 100);
+    // Calculate current value
+    const currentValue = calculateCurrentRDValue(
+      startDate,
+      data.monthlyAmount,
+      data.interestRate,
+      data.tenure
+    );
     
     const recurringDeposit = await prisma.recurringDeposit.create({
       data: {
@@ -88,7 +103,13 @@ export async function createRecurringDeposit(request: FastifyRequest, reply: Fas
       },
     });
     
-    return reply.code(201).send({ recurringDeposit });
+    // Return with current value
+    return reply.code(201).send({ 
+      recurringDeposit: {
+        ...recurringDeposit,
+        currentValue,
+      }
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return reply.code(400).send({ error: error.errors });
@@ -119,10 +140,10 @@ export async function updateRecurringDeposit(request: FastifyRequest, reply: Fas
     const maturityDate = data.maturityDate ? new Date(data.maturityDate) : existingRD.maturityDate;
     
     // Recalculate maturity amount
-    const n = tenure;
-    const r = interestRate;
-    const P = monthlyAmount;
-    const maturityAmount = P * n + (P * n * (n + 1) * r) / (2 * 12 * 100);
+    const maturityAmount = calculateMaturityAmount(monthlyAmount, interestRate, tenure);
+    
+    // Calculate current value
+    const currentValue = calculateCurrentRDValue(startDate, monthlyAmount, interestRate, tenure);
     
     const recurringDeposit = await prisma.recurringDeposit.update({
       where: { id },
@@ -146,7 +167,13 @@ export async function updateRecurringDeposit(request: FastifyRequest, reply: Fas
       },
     });
     
-    return reply.send({ recurringDeposit });
+    // Return with current value
+    return reply.send({
+      recurringDeposit: {
+        ...recurringDeposit,
+        currentValue,
+      }
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return reply.code(400).send({ error: error.errors });

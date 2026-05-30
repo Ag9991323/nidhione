@@ -12,6 +12,7 @@ export interface RecurringDeposit {
   maturityDate: string;
   tenure: number;
   maturityAmount: number;
+  currentValue?: number;
   goalId: string | null;
   goal?: {
     id: string;

@@ -283,8 +283,8 @@ export default function RecurringDepositsList() {
       },
     },
     {
-      id: 'maturityAmount',
-      label: 'Maturity Amount',
+      id: 'currentValue',
+      label: 'Current Value',
       align: 'right' as const,
       format: (value: any, row: any) => {
         const totalInvested = row.monthlyAmount * row.tenure;
@@ -294,7 +294,7 @@ export default function RecurringDepositsList() {
               {formatCurrency(value)}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              (Total: {formatCurrency(totalInvested)})
+              Mat: {formatCurrency(row.maturityAmount)}
             </Typography>
           </Box>
         );
