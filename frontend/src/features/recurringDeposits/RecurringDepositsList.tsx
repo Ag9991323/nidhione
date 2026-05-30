@@ -287,7 +287,6 @@ export default function RecurringDepositsList() {
       label: 'Current Value',
       align: 'right' as const,
       format: (value: any, row: any) => {
-        const totalInvested = row.monthlyAmount * row.tenure;
         return (
           <Box>
             <Typography variant="body2" fontWeight="bold" color="success.main">
