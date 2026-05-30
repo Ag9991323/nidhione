@@ -26,8 +26,11 @@ RUN npm install -g serve
 # Copy built static files
 COPY --from=builder /app/dist ./dist
 
+# Copy serve configuration for SPA routing
+COPY serve.json ./serve.json
+
 # Expose port
 EXPOSE 5173
 
-# Serve static files
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-5173}"]
+# Serve static files with SPA fallback
+CMD sh -c 'serve -c serve.json -s dist -l ${PORT:-5173}'
