@@ -1,5 +1,5 @@
 // (removed duplicate import)
-import React, { useState, ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Box,
   Button,
@@ -23,8 +23,6 @@ import {
   Tab,
   Grow,
   CircularProgress,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
 import { DataTable } from '@/shared/components';
 import {

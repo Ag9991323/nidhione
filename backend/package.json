@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "NidhiOne Wealth Management Backend API",
   "main": "dist/server.js",
-  "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
-  },
+ "scripts": {
+  "dev": "tsx watch src/server.ts",
+  "build": "npx prisma generate && tsc",
+  "start": "bash start.sh",
+  "prisma:generate": "prisma generate",
+  "prisma:migrate": "prisma migrate dev",
+  "prisma:studio": "prisma studio"
+},
   "keywords": [
     "wealth",
     "management",

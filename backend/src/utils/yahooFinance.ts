@@ -11,7 +11,7 @@ export async function getStockPrice(symbol: string): Promise<number | null> {
   try {
     // Yahoo Finance API v8
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
-    const response = await axios.get(url);
+    const response = await axios.get(url, { timeout: 5000 });
     
     const data = response.data;
     if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
@@ -21,6 +21,7 @@ export async function getStockPrice(symbol: string): Promise<number | null> {
     return null;
   } catch (error) {
     console.error(`Error fetching price for ${symbol}:`, error);
+    // Return null gracefully instead of crashing
     return null;
   }
 }
@@ -45,6 +46,7 @@ export interface StockSearchResult {
   name: string;
   exchange: string;
   type: string;
+  price?: number | null;
 }
 
 /**
@@ -90,6 +92,20 @@ export async function searchStocks(query: string): Promise<StockSearchResult[]> 
           name: quote.longname || quote.shortname,
           exchange: exchange,
           type: quote.quoteType || 'EQUITY',
+          price:
+            typeof quote.regularMarketPrice === 'number'
+              ? quote.regularMarketPrice
+              : typeof quote.regularMarketPrice === 'string'
+                ? Number(quote.regularMarketPrice)
+                : typeof quote.price === 'number'
+                  ? quote.price
+                  : typeof quote.price === 'string'
+                    ? Number(quote.price)
+                    : typeof quote.ask === 'number'
+                      ? quote.ask
+                      : typeof quote.bid === 'number'
+                        ? quote.bid
+                        : null,
         };
       })
       .slice(0, 15);

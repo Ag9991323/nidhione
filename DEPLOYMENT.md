@@ -1,6 +1,10 @@
-# 🚀 Railway Deployment Guide - Free Tier
+# 🚀 Railway Deployment Guide (Recommended for Demos)
 
-Deploy your NidhiOne app to Railway's free tier ($5/month credit) in ~20 minutes!
+Deploy your NidhiOne app to Railway in ~20 minutes.
+
+Note on "free":
+- Railway has a Free plan with limited monthly credit, and a Hobby plan that costs money monthly.
+- For a demo that should stay up continuously, the Hobby plan is the practical choice.
 
 ## 📋 Prerequisites
 
@@ -13,7 +17,7 @@ Deploy your NidhiOne app to Railway's free tier ($5/month credit) in ~20 minutes
 ## 🎯 Free Tier Limitations
 
 Railway Free Tier:
-- **$5 credit/month** (automatically applied)
+- **Small monthly credit** (enough for experimentation, not guaranteed 24/7 for a full stack app)
 - **512 MB RAM** per service
 - **Shared CPU**
 - **1 GB disk space**
@@ -81,12 +85,14 @@ backend
 ```
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 NODE_ENV=production
-PORT=3000
 JWT_SECRET=<GENERATE_STRONG_SECRET>
 FRONTEND_URL=${{frontend.RAILWAY_PUBLIC_DOMAIN}}
 PRICE_UPDATE_CRON=0 */6 * * *
 SIP_EXECUTION_CRON=0 9 * * *
+RECURRING_CASHFLOW_CRON=0 1 * * *
 ```
+
+Railway injects `PORT` automatically; the backend listens on `process.env.PORT`.
 
 **To generate JWT_SECRET:**
 ```bash
@@ -126,6 +132,8 @@ frontend
 ```
 VITE_API_URL=https://${{backend.RAILWAY_PUBLIC_DOMAIN}}/api
 ```
+
+The frontend service is configured to bind to Railway's injected `PORT` automatically.
 
 **Generate Domain** (under Settings):
 - Click **"Generate Domain"** to get a public URL

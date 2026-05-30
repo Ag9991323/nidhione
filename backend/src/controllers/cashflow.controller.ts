@@ -96,7 +96,7 @@ export async function getCashflowSummary(request: FastifyRequest, reply: Fastify
     let totalIncome = 0;
     let totalInvestment = 0;
     
-    cashflows.forEach((cashflow: typeof prisma.cashflow) => {
+    cashflows.forEach((cashflow) => {
       if (cashflow.type === 'spend') {
         totalSpend += cashflow.amount;
         categoryTotals[cashflow.category] = (categoryTotals[cashflow.category] || 0) + cashflow.amount;
@@ -156,7 +156,7 @@ export async function getMonthlyTrend(request: FastifyRequest, reply: FastifyRep
       let totalIncome = 0;
       let totalInvestment = 0;
       
-      cashflows.forEach((cashflow: typeof prisma.cashflow) => {
+      cashflows.forEach((cashflow) => {
         if (cashflow.type === 'spend') {
           totalSpend += cashflow.amount;
         } else if (cashflow.type === 'income') {
