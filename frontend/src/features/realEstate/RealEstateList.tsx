@@ -16,7 +16,12 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataTable } from '@/shared/components';
-import { useGetRealEstateQuery, useCreateRealEstateMutation, useUpdateRealEstateMutation, useDeleteRealEstateMutation } from './realEstateAPI';
+import {
+  useGetRealEstateQuery,
+  useCreateRealEstateMutation,
+  useUpdateRealEstateMutation,
+  useDeleteRealEstateMutation,
+} from './realEstateAPI';
 import { useGetLiabilitiesQuery } from '@/features/liabilities/liabilitiesAPI';
 import { formatCurrency } from '@/utils/formatters';
 
@@ -130,7 +135,10 @@ export default function RealEstateList() {
   };
 
   const totalPurchaseValue = realEstates.reduce((sum, item) => sum + item.purchasePrice, 0);
-  const totalCurrentValue = realEstates.reduce((sum, item) => sum + (item.currentValue || item.purchasePrice), 0);
+  const totalCurrentValue = realEstates.reduce(
+    (sum, item) => sum + (item.currentValue || item.purchasePrice),
+    0,
+  );
   const totalGain = totalCurrentValue - totalPurchaseValue;
 
   if (isLoading) {
@@ -148,15 +156,25 @@ export default function RealEstateList() {
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Total Purchase Value</Typography>
-          <Typography variant="h5" color="primary">{formatCurrency(totalPurchaseValue)}</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Total Purchase Value
+          </Typography>
+          <Typography variant="h5" color="primary">
+            {formatCurrency(totalPurchaseValue)}
+          </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Current Value</Typography>
-          <Typography variant="h5" color="success.main">{formatCurrency(totalCurrentValue)}</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Current Value
+          </Typography>
+          <Typography variant="h5" color="success.main">
+            {formatCurrency(totalCurrentValue)}
+          </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Gain/Loss</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Gain/Loss
+          </Typography>
           <Typography variant="h5" color={totalGain >= 0 ? 'success.main' : 'error.main'}>
             {formatCurrency(totalGain)}
           </Typography>
@@ -167,18 +185,27 @@ export default function RealEstateList() {
         columns={[
           { id: 'propertyType', label: 'Property Type' },
           { id: 'location', label: 'Location' },
-          { id: 'purchasePrice', label: 'Purchase Price', align: 'right', format: (v) => formatCurrency(v) },
-          { 
-            id: 'currentValue', 
-            label: 'Current Value', 
-            align: 'right', 
-            format: (v, row) => formatCurrency(v || row.purchasePrice)
+          {
+            id: 'purchasePrice',
+            label: 'Purchase Price',
+            align: 'right',
+            format: v => formatCurrency(v),
           },
-          { id: 'purchaseDate', label: 'Purchase Date', format: (v) => new Date(v).toLocaleDateString() },
+          {
+            id: 'currentValue',
+            label: 'Current Value',
+            align: 'right',
+            format: (v, row) => formatCurrency(v || row.purchasePrice),
+          },
+          {
+            id: 'purchaseDate',
+            label: 'Purchase Date',
+            format: v => new Date(v).toLocaleDateString(),
+          },
           {
             id: 'liability',
             label: 'Linked Home Loan',
-            format: (v) =>
+            format: v =>
               v ? (
                 <Chip
                   label={`${v.name} (${formatCurrency(v.currentBalance)})`}
@@ -213,17 +240,21 @@ export default function RealEstateList() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Edit Property' : 'Add Property'}</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             select
             label="Property Type"
             value={formData.propertyType}
-            onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+            onChange={e => setFormData({ ...formData, propertyType: e.target.value })}
             margin="normal"
             required
           >
-            {propertyTypes.map((type) => (
+            {propertyTypes.map(type => (
               <MenuItem key={type} value={type}>
                 {type}
               </MenuItem>
@@ -233,7 +264,7 @@ export default function RealEstateList() {
             fullWidth
             label="Location"
             value={formData.location}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            onChange={e => setFormData({ ...formData, location: e.target.value })}
             margin="normal"
             required
           />
@@ -242,7 +273,7 @@ export default function RealEstateList() {
             label="Purchase Price"
             type="number"
             value={formData.purchasePrice}
-            onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
+            onChange={e => setFormData({ ...formData, purchasePrice: e.target.value })}
             margin="normal"
             required
           />
@@ -251,7 +282,7 @@ export default function RealEstateList() {
             label="Current Value"
             type="number"
             value={formData.currentValue}
-            onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
             margin="normal"
             helperText="Optional - Leave empty to use purchase price"
           />
@@ -260,7 +291,7 @@ export default function RealEstateList() {
             label="Purchase Date"
             type="date"
             value={formData.purchaseDate}
-            onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, purchaseDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             required
@@ -270,14 +301,14 @@ export default function RealEstateList() {
             select
             label="Link to Home Loan"
             value={formData.liabilityId}
-            onChange={(e) => setFormData({ ...formData, liabilityId: e.target.value })}
+            onChange={e => setFormData({ ...formData, liabilityId: e.target.value })}
             margin="normal"
             helperText="Optional - Link this property to a home loan"
           >
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {homeLoans.map((loan) => (
+            {homeLoans.map(loan => (
               <MenuItem key={loan.id} value={loan.id}>
                 {loan.name} ({formatCurrency(loan.currentBalance)} outstanding)
               </MenuItem>

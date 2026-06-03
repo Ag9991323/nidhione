@@ -26,7 +26,7 @@ const updateRDSchema = z.object({
 export async function getAllRecurringDeposits(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const recurringDeposits = await prisma.recurringDeposit.findMany({
       where: { userId },
       include: {
@@ -39,18 +39,18 @@ export async function getAllRecurringDeposits(request: FastifyRequest, reply: Fa
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     // Calculate current value for each RD
-    const rdsWithCurrentValue = recurringDeposits.map((rd) => ({
+    const rdsWithCurrentValue = recurringDeposits.map(rd => ({
       ...rd,
       currentValue: calculateCurrentRDValue(
         rd.startDate,
         rd.monthlyAmount,
         rd.interestRate,
-        rd.tenure
+        rd.tenure,
       ),
     }));
-    
+
     return reply.send({ recurringDeposits: rdsWithCurrentValue });
   } catch (error) {
     console.error('Get recurring deposits error:', error);
@@ -62,25 +62,25 @@ export async function createRecurringDeposit(request: FastifyRequest, reply: Fas
   try {
     const userId = (request.user as any).userId;
     const data = createRDSchema.parse(request.body);
-    
+
     const startDate = new Date(data.startDate);
     const maturityDate = new Date(data.maturityDate);
-    
+
     // Calculate maturity amount using utility function
     const maturityAmount = calculateMaturityAmount(
       data.monthlyAmount,
       data.interestRate,
-      data.tenure
+      data.tenure,
     );
-    
+
     // Calculate current value
     const currentValue = calculateCurrentRDValue(
       startDate,
       data.monthlyAmount,
       data.interestRate,
-      data.tenure
+      data.tenure,
     );
-    
+
     const recurringDeposit = await prisma.recurringDeposit.create({
       data: {
         userId,
@@ -102,13 +102,13 @@ export async function createRecurringDeposit(request: FastifyRequest, reply: Fas
         },
       },
     });
-    
+
     // Return with current value
-    return reply.code(201).send({ 
+    return reply.code(201).send({
       recurringDeposit: {
         ...recurringDeposit,
         currentValue,
-      }
+      },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -124,27 +124,27 @@ export async function updateRecurringDeposit(request: FastifyRequest, reply: Fas
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateRDSchema.parse(request.body);
-    
+
     const existingRD = await prisma.recurringDeposit.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingRD) {
       return reply.code(404).send({ error: 'Recurring deposit not found' });
     }
-    
+
     const monthlyAmount = data.monthlyAmount ?? existingRD.monthlyAmount;
     const interestRate = data.interestRate ?? existingRD.interestRate;
     const tenure = data.tenure ?? existingRD.tenure;
     const startDate = data.startDate ? new Date(data.startDate) : existingRD.startDate;
     const maturityDate = data.maturityDate ? new Date(data.maturityDate) : existingRD.maturityDate;
-    
+
     // Recalculate maturity amount
     const maturityAmount = calculateMaturityAmount(monthlyAmount, interestRate, tenure);
-    
+
     // Calculate current value
     const currentValue = calculateCurrentRDValue(startDate, monthlyAmount, interestRate, tenure);
-    
+
     const recurringDeposit = await prisma.recurringDeposit.update({
       where: { id },
       data: {
@@ -166,13 +166,13 @@ export async function updateRecurringDeposit(request: FastifyRequest, reply: Fas
         },
       },
     });
-    
+
     // Return with current value
     return reply.send({
       recurringDeposit: {
         ...recurringDeposit,
         currentValue,
-      }
+      },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -187,19 +187,19 @@ export async function deleteRecurringDeposit(request: FastifyRequest, reply: Fas
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     const existingRD = await prisma.recurringDeposit.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingRD) {
       return reply.code(404).send({ error: 'Recurring deposit not found' });
     }
-    
+
     await prisma.recurringDeposit.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Recurring deposit deleted successfully' });
   } catch (error) {
     console.error('Delete recurring deposit error:', error);

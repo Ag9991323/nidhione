@@ -31,7 +31,7 @@ function calculateNextExecutionDate(startDate: Date, frequency: string): Date {
 export async function getAllSIPs(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const sips = await prisma.sIP.findMany({
       where: { userId },
       include: {
@@ -51,7 +51,7 @@ export async function getAllSIPs(request: FastifyRequest, reply: FastifyReply) {
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send({ sips });
   } catch (error) {
     console.error('Get SIPs error:', error);
@@ -63,9 +63,9 @@ export async function getSIPsByMutualFund(request: FastifyRequest, reply: Fastif
   try {
     const userId = (request.user as any).userId;
     const { mfId } = request.params as { mfId: string };
-    
+
     const sips = await prisma.sIP.findMany({
-      where: { 
+      where: {
         userId,
         mfId,
       },
@@ -79,7 +79,7 @@ export async function getSIPsByMutualFund(request: FastifyRequest, reply: Fastif
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send({ sips });
   } catch (error) {
     console.error('Get SIPs by MF error:', error);
@@ -91,7 +91,7 @@ export async function createSIP(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
     const data = createSIPSchema.parse(request.body);
-    
+
     // Verify mutual fund exists and belongs to user
     const mutualFund = await prisma.mutualFund.findFirst({
       where: {
@@ -99,14 +99,14 @@ export async function createSIP(request: FastifyRequest, reply: FastifyReply) {
         userId,
       },
     });
-    
+
     if (!mutualFund) {
       return reply.code(404).send({ error: 'Mutual fund not found' });
     }
-    
+
     const startDate = new Date(data.startDate);
     const nextExecutionDate = calculateNextExecutionDate(startDate, data.frequency);
-    
+
     const sip = await prisma.sIP.create({
       data: {
         userId,
@@ -134,7 +134,7 @@ export async function createSIP(request: FastifyRequest, reply: FastifyReply) {
         },
       },
     });
-    
+
     return reply.code(201).send({ sip });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -150,7 +150,7 @@ export async function updateSIP(request: FastifyRequest, reply: FastifyReply) {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateSIPSchema.parse(request.body);
-    
+
     // Verify SIP exists and belongs to user
     const existingSIP = await prisma.sIP.findFirst({
       where: {
@@ -158,11 +158,11 @@ export async function updateSIP(request: FastifyRequest, reply: FastifyReply) {
         userId,
       },
     });
-    
+
     if (!existingSIP) {
       return reply.code(404).send({ error: 'SIP not found' });
     }
-    
+
     const sip = await prisma.sIP.update({
       where: { id },
       data,
@@ -182,7 +182,7 @@ export async function updateSIP(request: FastifyRequest, reply: FastifyReply) {
         },
       },
     });
-    
+
     return reply.send({ sip });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -197,7 +197,7 @@ export async function deleteSIP(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     // Verify SIP exists and belongs to user
     const existingSIP = await prisma.sIP.findFirst({
       where: {
@@ -205,15 +205,15 @@ export async function deleteSIP(request: FastifyRequest, reply: FastifyReply) {
         userId,
       },
     });
-    
+
     if (!existingSIP) {
       return reply.code(404).send({ error: 'SIP not found' });
     }
-    
+
     await prisma.sIP.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'SIP deleted successfully' });
   } catch (error) {
     console.error('Delete SIP error:', error);

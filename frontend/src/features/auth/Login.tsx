@@ -96,7 +96,7 @@ export default function Login() {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
               margin="normal"
               autoComplete="email"
@@ -107,11 +107,20 @@ export default function Login() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               margin="normal"
               autoComplete="current-password"
             />
+
+            <Box sx={{ textAlign: 'right', mt: 0.5 }}>
+              <Link
+                to="/forgot-password"
+                style={{ color: '#1e3a8a', textDecoration: 'none', fontSize: '0.875rem' }}
+              >
+                Forgot password?
+              </Link>
+            </Box>
 
             <Button
               fullWidth

@@ -32,9 +32,7 @@ const importSchema = z.object({
 async function resolveSchemeCode(schemeName: string) {
   const results = await searchMutualFund(schemeName);
   if (!results.length) return null;
-  const exact = results.find(
-    (r) => r.schemeName.toLowerCase() === schemeName.trim().toLowerCase()
-  );
+  const exact = results.find(r => r.schemeName.toLowerCase() === schemeName.trim().toLowerCase());
   return exact || results[0];
 }
 
@@ -48,8 +46,10 @@ export async function importHoldings(request: FastifyRequest, reply: FastifyRepl
 
     const errors: Array<{ type: 'stock' | 'mutualFund'; index: number; message: string }> = [];
 
-    const symbols = Array.from(new Set(stocks.map((s) => s.symbol)));
-    const priceMap = symbols.length ? await getMultipleStockPrices(symbols) : new Map<string, number>();
+    const symbols = Array.from(new Set(stocks.map(s => s.symbol)));
+    const priceMap = symbols.length
+      ? await getMultipleStockPrices(symbols)
+      : new Map<string, number>();
 
     let createdStocks = 0;
     for (let i = 0; i < stocks.length; i += 1) {
@@ -89,7 +89,7 @@ export async function importHoldings(request: FastifyRequest, reply: FastifyRepl
       try {
         let schemeCode = mf.schemeCode;
         let schemeName = mf.schemeName;
-        let amcName = mf.amcName;
+        const amcName = mf.amcName;
 
         if (!schemeCode) {
           const resolved = await resolveSchemeCode(mf.schemeName);

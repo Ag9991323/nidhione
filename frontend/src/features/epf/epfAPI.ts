@@ -39,13 +39,13 @@ export const epfAPI = createApi({
     },
   }),
   tagTypes: ['EPF'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getEPFs: builder.query<{ epfAccounts: EPF[] }, void>({
       query: () => '/',
       providesTags: ['EPF'],
     }),
     createEPF: builder.mutation<{ epfAccount: EPF }, CreateEPFRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
@@ -61,7 +61,7 @@ export const epfAPI = createApi({
       invalidatesTags: ['EPF'],
     }),
     deleteEPF: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
@@ -70,9 +70,5 @@ export const epfAPI = createApi({
   }),
 });
 
-export const {
-  useGetEPFsQuery,
-  useCreateEPFMutation,
-  useUpdateEPFMutation,
-  useDeleteEPFMutation,
-} = epfAPI;
+export const { useGetEPFsQuery, useCreateEPFMutation, useUpdateEPFMutation, useDeleteEPFMutation } =
+  epfAPI;

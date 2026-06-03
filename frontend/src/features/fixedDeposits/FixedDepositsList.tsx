@@ -89,16 +89,22 @@ export default function FixedDepositsList() {
   const handleSubmit = async () => {
     // Log form data for debugging
     console.log('Form data:', formData);
-    
+
     // Validation
-    if (!formData.bankName || !formData.amount || !formData.interestRate || !formData.startDate || !formData.maturityDate) {
+    if (
+      !formData.bankName ||
+      !formData.amount ||
+      !formData.interestRate ||
+      !formData.startDate ||
+      !formData.maturityDate
+    ) {
       const missingFields = [];
       if (!formData.bankName) missingFields.push('Bank Name');
       if (!formData.amount) missingFields.push('Amount');
       if (!formData.interestRate) missingFields.push('Interest Rate');
       if (!formData.startDate) missingFields.push('Start Date');
       if (!formData.maturityDate) missingFields.push('Maturity Date');
-      
+
       alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
       return;
     }
@@ -115,7 +121,7 @@ export default function FixedDepositsList() {
 
     const startDate = new Date(formData.startDate);
     const maturityDate = new Date(formData.maturityDate);
-    
+
     if (maturityDate <= startDate) {
       alert('Maturity date must be after start date');
       return;
@@ -235,10 +241,10 @@ export default function FixedDepositsList() {
         return isMatured ? (
           <Chip label="Matured" size="small" color="success" />
         ) : (
-          <Chip 
-            label={`${daysRemaining} days left`} 
-            size="small" 
-            color="primary" 
+          <Chip
+            label={`${daysRemaining} days left`}
+            size="small"
+            color="primary"
             variant="outlined"
           />
         );
@@ -248,11 +254,7 @@ export default function FixedDepositsList() {
       id: 'goal',
       label: 'Goal',
       format: (value: any) =>
-        value ? (
-          <Chip label={value.name} size="small" color="primary" variant="outlined" />
-        ) : (
-          '-'
-        ),
+        value ? <Chip label={value.name} size="small" color="primary" variant="outlined" /> : '-',
     },
     {
       id: 'actions',
@@ -298,7 +300,7 @@ export default function FixedDepositsList() {
               fullWidth
               label="Bank Name"
               value={formData.bankName}
-              onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+              onChange={e => setFormData({ ...formData, bankName: e.target.value })}
               required
             />
             <TextField
@@ -306,7 +308,7 @@ export default function FixedDepositsList() {
               label="Principal Amount"
               type="number"
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              onChange={e => setFormData({ ...formData, amount: e.target.value })}
               required
               inputProps={{ step: '1000' }}
             />
@@ -315,7 +317,7 @@ export default function FixedDepositsList() {
               label="Interest Rate (% p.a.)"
               type="number"
               value={formData.interestRate}
-              onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+              onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
               required
               inputProps={{ step: '0.1' }}
             />
@@ -324,7 +326,7 @@ export default function FixedDepositsList() {
               label="Start Date"
               type="date"
               value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, startDate: e.target.value })}
               required
               InputLabelProps={{ shrink: true }}
             />
@@ -333,7 +335,7 @@ export default function FixedDepositsList() {
               label="Maturity Date"
               type="date"
               value={formData.maturityDate}
-              onChange={(e) => setFormData({ ...formData, maturityDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, maturityDate: e.target.value })}
               required
               InputLabelProps={{ shrink: true }}
             />
@@ -342,10 +344,10 @@ export default function FixedDepositsList() {
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>
@@ -354,9 +356,11 @@ export default function FixedDepositsList() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : (editingId ? 'Update' : 'Add')}
+            {isSubmitting ? <CircularProgress size={24} /> : editingId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>

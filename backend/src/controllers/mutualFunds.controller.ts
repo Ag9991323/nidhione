@@ -20,7 +20,6 @@ const updateMFSchema = z.object({
   goalId: z.string().optional().nullable(),
 });
 
-
 export async function getAllMutualFunds(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
@@ -40,7 +39,7 @@ export async function getAllMutualFunds(request: FastifyRequest, reply: FastifyR
 
     // Fetch daily NAV for each mutual fund (in parallel)
     const mutualFundsWithCurrent = await Promise.all(
-      mutualFunds.map(async (mf) => {
+      mutualFunds.map(async mf => {
         const currentNav = await getDailyMutualFundNav(mf.schemeCode);
         const currentValue = currentNav ? mf.units * currentNav : mf.investedAmount;
         return {
@@ -48,7 +47,7 @@ export async function getAllMutualFunds(request: FastifyRequest, reply: FastifyR
           currentNav,
           currentValue,
         };
-      })
+      }),
     );
 
     return reply.send({ mutualFunds: mutualFundsWithCurrent });
@@ -62,15 +61,15 @@ export async function createMutualFund(request: FastifyRequest, reply: FastifyRe
   try {
     const userId = (request.user as any).userId;
     const data = createMFSchema.parse(request.body);
-    
+
     const investedAmount = data.units * data.averageNav;
-    
+
     // Fetch current NAV
     const currentNav = await getNAVBySchemeCode(data.schemeCode);
     const currentValue = currentNav ? data.units * currentNav : investedAmount;
-    
+
     const { returns, returnsPercentage } = calculateSimpleReturns(investedAmount, currentValue);
-    
+
     const mutualFund = await prisma.mutualFund.create({
       data: {
         userId,
@@ -96,7 +95,7 @@ export async function createMutualFund(request: FastifyRequest, reply: FastifyRe
         },
       },
     });
-    
+
     return reply.code(201).send({ mutualFund });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -112,23 +111,23 @@ export async function updateMutualFund(request: FastifyRequest, reply: FastifyRe
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateMFSchema.parse(request.body);
-    
+
     const existingMF = await prisma.mutualFund.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingMF) {
       return reply.code(404).send({ error: 'Mutual fund not found' });
     }
-    
+
     const units = data.units ?? existingMF.units;
     const averageNav = data.averageNav ?? existingMF.averageNav;
     const investedAmount = units * averageNav;
-    
+
     const currentNav = await getNAVBySchemeCode(existingMF.schemeCode);
     const currentValue = currentNav ? units * currentNav : investedAmount;
     const { returns, returnsPercentage } = calculateSimpleReturns(investedAmount, currentValue);
-    
+
     const mutualFund = await prisma.mutualFund.update({
       where: { id },
       data: {
@@ -151,7 +150,7 @@ export async function updateMutualFund(request: FastifyRequest, reply: FastifyRe
         },
       },
     });
-    
+
     return reply.send({ mutualFund });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -166,19 +165,19 @@ export async function deleteMutualFund(request: FastifyRequest, reply: FastifyRe
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     const existingMF = await prisma.mutualFund.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingMF) {
       return reply.code(404).send({ error: 'Mutual fund not found' });
     }
-    
+
     await prisma.mutualFund.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Mutual fund deleted successfully' });
   } catch (error) {
     console.error('Delete mutual fund error:', error);
@@ -189,11 +188,11 @@ export async function deleteMutualFund(request: FastifyRequest, reply: FastifyRe
 export async function searchMF(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { query } = request.query as { query: string };
-    
+
     if (!query || query.length < 3) {
       return reply.code(400).send({ error: 'Query must be at least 3 characters' });
     }
-    
+
     const results = await searchMutualFund(query);
     return reply.send({ results });
   } catch (error) {

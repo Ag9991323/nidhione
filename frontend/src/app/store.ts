@@ -46,7 +46,7 @@ export const store = configureStore({
     [goldAPI.reducerPath]: goldAPI.reducer,
     [trackRecordApi.reducerPath]: trackRecordApi.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(
       authAPI.middleware,
       stocksAPI.middleware,

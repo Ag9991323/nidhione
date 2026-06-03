@@ -1,4 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { syncCurrentMonthSnapshot } from '../services/snapshotService';
+import { sendOtpEmail, sendPasswordResetEmail } from '../services/emailService';
 import bcrypt from 'bcryptjs';
 import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library';
@@ -6,11 +8,26 @@ import prisma from '../config/database';
 import { z } from 'zod';
 import { config } from '../config';
 
+const sendOtpSchema = z.object({
+  email: z.string().email(),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+const resetPasswordSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6),
+  newPassword: z.string().min(8),
+});
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().min(2),
   mobile: z.string().optional(),
+  otp: z.string().length(6),
 });
 
 const loginSchema = z.object({
@@ -56,49 +73,70 @@ async function exchangeGoogleCodeForTokens(input: {
   };
 }
 
+export async function sendOtp(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { email } = sendOtpSchema.parse(request.body);
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return reply.code(400).send({ error: 'An account with this email already exists' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.emailOtp.deleteMany({ where: { email } });
+    await prisma.emailOtp.create({ data: { email, otp, expiresAt } });
+
+    await sendOtpEmail(email, otp);
+
+    return reply.send({ message: 'OTP sent to your email' });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return reply.code(400).send({ error: error.errors });
+    }
+    console.error('Send OTP error:', error);
+    return reply.code(500).send({ error: 'Failed to send OTP' });
+  }
+}
+
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { email, password, name, mobile } = registerSchema.parse(request.body);
-    
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const { email, password, name, mobile, otp } = registerSchema.parse(request.body);
+
+    const otpRecord = await prisma.emailOtp.findFirst({
       where: { email },
+      orderBy: { createdAt: 'desc' },
     });
-    
+
+    if (!otpRecord) {
+      return reply.code(400).send({ error: 'OTP not found. Please request a new one.' });
+    }
+    if (new Date() > otpRecord.expiresAt) {
+      await prisma.emailOtp.delete({ where: { id: otpRecord.id } });
+      return reply.code(400).send({ error: 'OTP has expired. Please request a new one.' });
+    }
+    if (otpRecord.otp !== otp) {
+      return reply.code(400).send({ error: 'Invalid OTP' });
+    }
+
+    await prisma.emailOtp.delete({ where: { id: otpRecord.id } });
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return reply.code(400).send({ error: 'User already exists' });
     }
-    
-    // Hash password
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create user
+
     const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        mobile,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        mobile: true,
-        createdAt: true,
-      },
+      data: { email, password: hashedPassword, name, mobile },
+      select: { id: true, email: true, name: true, mobile: true, createdAt: true },
     });
-    
-    // Generate JWT token
-    const token = request.server.jwt.sign({
-      userId: user.id,
-      email: user.email,
-    });
-    
-    return reply.send({
-      user,
-      token,
-    });
+
+    const token = request.server.jwt.sign({ userId: user.id, email: user.email });
+
+    return reply.send({ user, token });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return reply.code(400).send({ error: error.errors });
@@ -111,12 +149,12 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 export async function login(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { email, password } = loginSchema.parse(request.body);
-    
+
     // Find user
     const user = await prisma.user.findUnique({
       where: { email },
     });
-    
+
     if (!user) {
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
@@ -124,20 +162,22 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
     if (!user.password) {
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    
+
     // Verify password
     const validPassword = await bcrypt.compare(password, user.password);
-    
+
     if (!validPassword) {
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    
+
     // Generate JWT token
     const token = request.server.jwt.sign({
       userId: user.id,
       email: user.email,
     });
-    
+
+    syncCurrentMonthSnapshot(user.id).catch(() => {});
+
     return reply.send({
       user: {
         id: user.id,
@@ -224,6 +264,8 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
       email: user.email,
     });
 
+    syncCurrentMonthSnapshot(user.id).catch(() => {});
+
     return reply.send({
       user: {
         id: user.id,
@@ -243,10 +285,82 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
   }
 }
 
+export async function forgotPassword(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { email } = forgotPasswordSchema.parse(request.body);
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Return success anyway to avoid leaking which emails are registered
+      return reply.send({ message: 'If this email is registered, an OTP has been sent.' });
+    }
+
+    if (!user.password) {
+      return reply
+        .code(400)
+        .send({ error: 'This account uses Google sign-in. Password reset is not available.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.emailOtp.deleteMany({ where: { email } });
+    await prisma.emailOtp.create({ data: { email, otp, expiresAt } });
+
+    await sendPasswordResetEmail(email, otp);
+
+    return reply.send({ message: 'If this email is registered, an OTP has been sent.' });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return reply.code(400).send({ error: error.errors });
+    }
+    console.error('Forgot password error:', error);
+    return reply.code(500).send({ error: 'Failed to send OTP' });
+  }
+}
+
+export async function resetPassword(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { email, otp, newPassword } = resetPasswordSchema.parse(request.body);
+
+    const otpRecord = await prisma.emailOtp.findFirst({
+      where: { email },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpRecord) {
+      return reply.code(400).send({ error: 'OTP not found. Please request a new one.' });
+    }
+    if (new Date() > otpRecord.expiresAt) {
+      await prisma.emailOtp.delete({ where: { id: otpRecord.id } });
+      return reply.code(400).send({ error: 'OTP has expired. Please request a new one.' });
+    }
+    if (otpRecord.otp !== otp) {
+      return reply.code(400).send({ error: 'Invalid OTP' });
+    }
+
+    await prisma.emailOtp.delete({ where: { id: otpRecord.id } });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    return reply.send({ message: 'Password reset successfully' });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return reply.code(400).send({ error: error.errors });
+    }
+    console.error('Reset password error:', error);
+    return reply.code(500).send({ error: 'Internal server error' });
+  }
+}
+
 export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -257,11 +371,11 @@ export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
         createdAt: true,
       },
     });
-    
+
     if (!user) {
       return reply.code(404).send({ error: 'User not found' });
     }
-    
+
     return reply.send({ user });
   } catch (error) {
     console.error('Get profile error:', error);

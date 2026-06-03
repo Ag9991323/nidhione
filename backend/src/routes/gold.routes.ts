@@ -10,16 +10,16 @@ import {
 export async function goldRoutes(fastify: FastifyInstance) {
   // Get current gold prices
   fastify.get('/prices', getCurrentGoldPrice);
-  
+
   // Get all gold assets
   fastify.get('/', { onRequest: [fastify.authenticate] }, getAllGold);
-  
+
   // Create gold asset
   fastify.post('/', { onRequest: [fastify.authenticate] }, createGold);
-  
+
   // Update gold asset
   fastify.put('/:id', { onRequest: [fastify.authenticate] }, updateGold);
-  
+
   // Delete gold asset
   fastify.delete('/:id', { onRequest: [fastify.authenticate] }, deleteGold);
 }

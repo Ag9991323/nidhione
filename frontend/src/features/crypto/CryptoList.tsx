@@ -16,7 +16,12 @@ import {
 } from '@mui/material';
 import { DataTable } from '@/shared/components';
 import { Add, Edit, Delete } from '@mui/icons-material';
-import { useGetCryptoQuery, useCreateCryptoMutation, useUpdateCryptoMutation, useDeleteCryptoMutation } from './cryptoAPI';
+import {
+  useGetCryptoQuery,
+  useCreateCryptoMutation,
+  useUpdateCryptoMutation,
+  useDeleteCryptoMutation,
+} from './cryptoAPI';
 import { useGetGoalsQuery } from '@/features/goals/goalsAPI';
 import { formatCurrency } from '@/utils/formatters';
 
@@ -130,7 +135,10 @@ export default function CryptoList() {
   };
 
   const totalValue = cryptoAssets.reduce((sum, crypto) => sum + crypto.currentValue, 0);
-  const totalInvested = cryptoAssets.reduce((sum, crypto) => sum + (crypto.quantity * crypto.averagePrice), 0);
+  const totalInvested = cryptoAssets.reduce(
+    (sum, crypto) => sum + crypto.quantity * crypto.averagePrice,
+    0,
+  );
   const totalReturns = totalValue - totalInvested;
 
   if (isLoading) {
@@ -148,15 +156,21 @@ export default function CryptoList() {
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Total Value</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Value
+          </Typography>
           <Typography variant="h6">{formatCurrency(totalValue)}</Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Total Invested</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Invested
+          </Typography>
           <Typography variant="h6">{formatCurrency(totalInvested)}</Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Returns</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Returns
+          </Typography>
           <Typography variant="h6" color={totalReturns >= 0 ? 'success.main' : 'error.main'}>
             {formatCurrency(totalReturns)}
           </Typography>
@@ -168,8 +182,18 @@ export default function CryptoList() {
           { id: 'coinName', label: 'Name' },
           { id: 'symbol', label: 'Symbol' },
           { id: 'quantity', label: 'Quantity', align: 'right' },
-          { id: 'averagePrice', label: 'Avg Price', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'currentValue', label: 'Current Value', align: 'right', format: (v) => formatCurrency(v) },
+          {
+            id: 'averagePrice',
+            label: 'Avg Price',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
+          {
+            id: 'currentValue',
+            label: 'Current Value',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
           {
             id: 'returns',
             label: 'Returns',
@@ -178,7 +202,10 @@ export default function CryptoList() {
               const invested = row.quantity * row.averagePrice;
               const returns = row.currentValue - invested;
               return (
-                <Typography variant="body2" sx={{ color: returns >= 0 ? 'success.main' : 'error.main' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: returns >= 0 ? 'success.main' : 'error.main' }}
+                >
                   {formatCurrency(returns)}
                 </Typography>
               );
@@ -187,7 +214,8 @@ export default function CryptoList() {
           {
             id: 'goal',
             label: 'Goal',
-            format: (v) => v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-',
+            format: v =>
+              v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-',
           },
           {
             id: 'actions',
@@ -213,12 +241,16 @@ export default function CryptoList() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Edit Crypto' : 'Add Crypto'}</DialogTitle>
         <DialogContent>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             label="Coin Name"
             value={formData.coinName}
-            onChange={(e) => setFormData({ ...formData, coinName: e.target.value })}
+            onChange={e => setFormData({ ...formData, coinName: e.target.value })}
             margin="normal"
             required
           />
@@ -226,7 +258,7 @@ export default function CryptoList() {
             fullWidth
             label="Symbol"
             value={formData.symbol}
-            onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+            onChange={e => setFormData({ ...formData, symbol: e.target.value })}
             margin="normal"
             required
           />
@@ -235,7 +267,7 @@ export default function CryptoList() {
             label="Quantity"
             type="number"
             value={formData.quantity}
-            onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+            onChange={e => setFormData({ ...formData, quantity: e.target.value })}
             margin="normal"
             required
           />
@@ -244,7 +276,7 @@ export default function CryptoList() {
             label="Average Price"
             type="number"
             value={formData.averagePrice}
-            onChange={(e) => setFormData({ ...formData, averagePrice: e.target.value })}
+            onChange={e => setFormData({ ...formData, averagePrice: e.target.value })}
             margin="normal"
             required
           />
@@ -253,7 +285,7 @@ export default function CryptoList() {
             label="Current Price"
             type="number"
             value={formData.currentPrice}
-            onChange={(e) => setFormData({ ...formData, currentPrice: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentPrice: e.target.value })}
             margin="normal"
             helperText="Optional"
           />
@@ -262,7 +294,7 @@ export default function CryptoList() {
             label="Current Value"
             type="number"
             value={formData.currentValue}
-            onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
             margin="normal"
             helperText="Leave empty to auto-calculate"
           />
@@ -271,7 +303,7 @@ export default function CryptoList() {
             select
             label="Goal (Optional)"
             value={formData.goalId}
-            onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+            onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             margin="normal"
           >
             <MenuItem value="">None</MenuItem>

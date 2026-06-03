@@ -23,7 +23,7 @@ const updateRealEstateSchema = z.object({
 export async function getAllRealEstate(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const realEstates = await prisma.realEstate.findMany({
       where: { userId },
       include: {
@@ -47,10 +47,10 @@ export async function createRealEstate(request: FastifyRequest, reply: FastifyRe
     // If liabilityId is provided, verify it exists and is a home loan
     if (validatedData.liabilityId) {
       const liability = await prisma.liability.findFirst({
-        where: { 
-          id: validatedData.liabilityId, 
+        where: {
+          id: validatedData.liabilityId,
           userId,
-          type: 'home_loan'
+          type: 'home_loan',
         },
       });
 
@@ -102,10 +102,10 @@ export async function updateRealEstate(request: FastifyRequest, reply: FastifyRe
     // If liabilityId is provided, verify it exists and is a home loan
     if (validatedData.liabilityId !== undefined && validatedData.liabilityId !== null) {
       const liability = await prisma.liability.findFirst({
-        where: { 
-          id: validatedData.liabilityId, 
+        where: {
+          id: validatedData.liabilityId,
           userId,
-          type: 'home_loan'
+          type: 'home_loan',
         },
       });
 
@@ -115,11 +115,15 @@ export async function updateRealEstate(request: FastifyRequest, reply: FastifyRe
     }
 
     const updateData: any = {};
-    if (validatedData.propertyType !== undefined) updateData.propertyType = validatedData.propertyType;
+    if (validatedData.propertyType !== undefined)
+      updateData.propertyType = validatedData.propertyType;
     if (validatedData.location !== undefined) updateData.location = validatedData.location;
-    if (validatedData.purchasePrice !== undefined) updateData.purchasePrice = validatedData.purchasePrice;
-    if (validatedData.purchaseDate !== undefined) updateData.purchaseDate = new Date(validatedData.purchaseDate);
-    if (validatedData.currentValue !== undefined) updateData.currentValue = validatedData.currentValue;
+    if (validatedData.purchasePrice !== undefined)
+      updateData.purchasePrice = validatedData.purchasePrice;
+    if (validatedData.purchaseDate !== undefined)
+      updateData.purchaseDate = new Date(validatedData.purchaseDate);
+    if (validatedData.currentValue !== undefined)
+      updateData.currentValue = validatedData.currentValue;
     if (validatedData.liabilityId !== undefined) {
       updateData.liabilityId = validatedData.liabilityId;
     }

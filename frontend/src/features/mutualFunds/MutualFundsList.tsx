@@ -47,7 +47,8 @@ export default function MutualFundsList() {
   const [createMutualFund] = useCreateMutualFundMutation();
   const [updateMutualFund] = useUpdateMutualFundMutation();
   const [deleteMutualFund] = useDeleteMutualFundMutation();
-  const [searchMF, { data: searchResults, isLoading: isSearching }] = useLazySearchMutualFundQuery();
+  const [searchMF, { data: searchResults, isLoading: isSearching }] =
+    useLazySearchMutualFundQuery();
   const [createSIP] = useCreateSIPMutation();
   const [updateSIP] = useUpdateSIPMutation();
   const [deleteSIP] = useDeleteSIPMutation();
@@ -80,7 +81,7 @@ export default function MutualFundsList() {
         searchMF(query);
       }
     }, 300),
-    [searchMF]
+    [searchMF],
   );
 
   const handleMFSearch = (_event: React.SyntheticEvent, value: string) => {
@@ -300,7 +301,7 @@ export default function MutualFundsList() {
                 </TableCell>
               </TableRow>
             ) : (
-              mutualFunds.map((mf) => (
+              mutualFunds.map(mf => (
                 <TableRow key={mf.id}>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
@@ -319,7 +320,9 @@ export default function MutualFundsList() {
                   </TableCell>
                   <TableCell align="right">
                     {mf.returns !== null ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                      >
                         {mf.returns >= 0 ? (
                           <TrendingUp sx={{ color: 'success.main', mr: 0.5, fontSize: 18 }} />
                         ) : (
@@ -372,8 +375,17 @@ export default function MutualFundsList() {
                       )}
                     </Box>
                     {getMFSIPs(mf.id).map(sip => (
-                      <Box key={sip.id} sx={{ mt: 1, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        key={sip.id}
+                        sx={{ mt: 1, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
                           <Box>
                             <Typography variant="caption" display="block">
                               {formatCurrency(sip.amount)} / {sip.frequency}
@@ -386,7 +398,13 @@ export default function MutualFundsList() {
                             <Chip
                               label={sip.status}
                               size="small"
-                              color={sip.status === 'active' ? 'success' : sip.status === 'paused' ? 'warning' : 'default'}
+                              color={
+                                sip.status === 'active'
+                                  ? 'success'
+                                  : sip.status === 'paused'
+                                    ? 'warning'
+                                    : 'default'
+                              }
                               sx={{ mr: 1 }}
                             />
                             <IconButton size="small" onClick={() => handleEditSip(sip)}>
@@ -416,14 +434,12 @@ export default function MutualFundsList() {
               <Autocomplete
                 freeSolo
                 options={searchResults?.results || []}
-                getOptionLabel={(option) =>
-                  typeof option === 'string' ? option : option.schemeName
-                }
+                getOptionLabel={option => (typeof option === 'string' ? option : option.schemeName)}
                 loading={isSearching}
                 onInputChange={handleMFSearch}
                 onChange={handleMFSelect}
                 value={selectedMF}
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField
                     {...params}
                     label="Search Mutual Fund"
@@ -457,18 +473,8 @@ export default function MutualFundsList() {
             )}
             {editingId && (
               <>
-                <TextField
-                  fullWidth
-                  label="Scheme Name"
-                  value={formData.schemeName}
-                  disabled
-                />
-                <TextField
-                  fullWidth
-                  label="Scheme Code"
-                  value={formData.schemeCode}
-                  disabled
-                />
+                <TextField fullWidth label="Scheme Name" value={formData.schemeName} disabled />
+                <TextField fullWidth label="Scheme Code" value={formData.schemeCode} disabled />
               </>
             )}
             <TextField
@@ -476,7 +482,7 @@ export default function MutualFundsList() {
               label="Units"
               type="number"
               value={formData.units}
-              onChange={(e) => setFormData({ ...formData, units: e.target.value })}
+              onChange={e => setFormData({ ...formData, units: e.target.value })}
               required
               inputProps={{ step: '0.001' }}
             />
@@ -485,7 +491,7 @@ export default function MutualFundsList() {
               label="Average NAV"
               type="number"
               value={formData.averageNav}
-              onChange={(e) => setFormData({ ...formData, averageNav: e.target.value })}
+              onChange={e => setFormData({ ...formData, averageNav: e.target.value })}
               required
               inputProps={{ step: '0.01' }}
             />
@@ -494,10 +500,10 @@ export default function MutualFundsList() {
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>
@@ -531,7 +537,7 @@ export default function MutualFundsList() {
               label="SIP Amount"
               type="number"
               value={sipFormData.amount}
-              onChange={(e) => setSipFormData({ ...sipFormData, amount: e.target.value })}
+              onChange={e => setSipFormData({ ...sipFormData, amount: e.target.value })}
               required
               inputProps={{ step: '100' }}
             />
@@ -541,7 +547,7 @@ export default function MutualFundsList() {
                 label="Start Date"
                 type="date"
                 value={sipFormData.startDate}
-                onChange={(e) => setSipFormData({ ...sipFormData, startDate: e.target.value })}
+                onChange={e => setSipFormData({ ...sipFormData, startDate: e.target.value })}
                 required
                 InputLabelProps={{ shrink: true }}
               />
@@ -551,7 +557,12 @@ export default function MutualFundsList() {
               fullWidth
               label="Frequency"
               value={sipFormData.frequency}
-              onChange={(e) => setSipFormData({ ...sipFormData, frequency: e.target.value as 'monthly' | 'quarterly' })}
+              onChange={e =>
+                setSipFormData({
+                  ...sipFormData,
+                  frequency: e.target.value as 'monthly' | 'quarterly',
+                })
+              }
               required
             >
               <MenuItem value="monthly">Monthly</MenuItem>
@@ -563,7 +574,12 @@ export default function MutualFundsList() {
                 fullWidth
                 label="Status"
                 value={sipFormData.status}
-                onChange={(e) => setSipFormData({ ...sipFormData, status: e.target.value as 'active' | 'paused' | 'stopped' })}
+                onChange={e =>
+                  setSipFormData({
+                    ...sipFormData,
+                    status: e.target.value as 'active' | 'paused' | 'stopped',
+                  })
+                }
                 required
               >
                 <MenuItem value="active">Active</MenuItem>
@@ -576,10 +592,10 @@ export default function MutualFundsList() {
               fullWidth
               label="Link to Goal (Optional)"
               value={sipFormData.goalId}
-              onChange={(e) => setSipFormData({ ...sipFormData, goalId: e.target.value })}
+              onChange={e => setSipFormData({ ...sipFormData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>

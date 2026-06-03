@@ -43,13 +43,13 @@ export const goalsAPI = createApi({
     },
   }),
   tagTypes: ['Goal'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getGoals: builder.query<{ goals: Goal[] }, void>({
       query: () => '/',
       providesTags: ['Goal'],
     }),
     createGoal: builder.mutation<{ goal: Goal }, CreateGoalRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
@@ -65,7 +65,7 @@ export const goalsAPI = createApi({
       invalidatesTags: ['Goal'],
     }),
     deleteGoal: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

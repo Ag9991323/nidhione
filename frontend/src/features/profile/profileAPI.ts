@@ -33,13 +33,13 @@ export const profileAPI = createApi({
     },
   }),
   tagTypes: ['Profile'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getProfile: builder.query<Profile, void>({
       query: () => '/',
       providesTags: ['Profile'],
     }),
     updateProfile: builder.mutation<{ user: Profile }, UpdateProfileRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'PUT',
         body: data,
@@ -47,7 +47,7 @@ export const profileAPI = createApi({
       invalidatesTags: ['Profile'],
     }),
     changePassword: builder.mutation<{ message: string }, ChangePasswordRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/change-password',
         method: 'POST',
         body: data,
@@ -56,8 +56,5 @@ export const profileAPI = createApi({
   }),
 });
 
-export const {
-  useGetProfileQuery,
-  useUpdateProfileMutation,
-  useChangePasswordMutation,
-} = profileAPI;
+export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } =
+  profileAPI;

@@ -48,9 +48,7 @@ async function start() {
   try {
     // Register plugins
     await fastify.register(cors, {
-      origin: config.nodeEnv === 'production' 
-        ? [config.frontendUrl] 
-        : true, // Allow all origins in development
+      origin: config.nodeEnv === 'production' ? [config.frontendUrl] : true, // Allow all origins in development
       credentials: true,
     });
 
@@ -90,7 +88,6 @@ async function start() {
     // Track Record monthly snapshot routes
     const trackRecordRoutes = (await import('./routes/trackRecord.routes')).default;
     await fastify.register(trackRecordRoutes, { prefix: '/api/track-records' });
-    
 
     // Start cron jobs
     startPriceUpdateCron();

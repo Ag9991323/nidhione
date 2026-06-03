@@ -61,7 +61,15 @@ interface LiabilityCardProps {
   onClick: () => void;
 }
 
-function LiabilityCard({ title, icon, color, value, count, countLabel, onClick }: LiabilityCardProps) {
+function LiabilityCard({
+  title,
+  icon,
+  color,
+  value,
+  count,
+  countLabel,
+  onClick,
+}: LiabilityCardProps) {
   return (
     <Card sx={{ height: '100%' }}>
       <CardActionArea onClick={onClick} sx={{ height: '100%' }}>
@@ -166,19 +174,33 @@ export default function Liabilities() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
   // Calculate totals by type
-  const homeLoanTotal = liabilities.filter(l => l.type === 'home_loan').reduce((sum, l) => sum + l.currentBalance, 0);
-  const carLoanTotal = liabilities.filter(l => l.type === 'car_loan').reduce((sum, l) => sum + l.currentBalance, 0);
-  const personalLoanTotal = liabilities.filter(l => l.type === 'personal_loan').reduce((sum, l) => sum + l.currentBalance, 0);
-  const creditCardTotal = liabilities.filter(l => l.type === 'credit_card').reduce((sum, l) => sum + l.currentBalance, 0);
-  const educationLoanTotal = liabilities.filter(l => l.type === 'education_loan').reduce((sum, l) => sum + l.currentBalance, 0);
-  const otherTotal = liabilities.filter(l => l.type === 'other').reduce((sum, l) => sum + l.currentBalance, 0);
+  const homeLoanTotal = liabilities
+    .filter(l => l.type === 'home_loan')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
+  const carLoanTotal = liabilities
+    .filter(l => l.type === 'car_loan')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
+  const personalLoanTotal = liabilities
+    .filter(l => l.type === 'personal_loan')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
+  const creditCardTotal = liabilities
+    .filter(l => l.type === 'credit_card')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
+  const educationLoanTotal = liabilities
+    .filter(l => l.type === 'education_loan')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
+  const otherTotal = liabilities
+    .filter(l => l.type === 'other')
+    .reduce((sum, l) => sum + l.currentBalance, 0);
 
   const homeLoanCount = liabilities.filter(l => l.type === 'home_loan').length;
   const carLoanCount = liabilities.filter(l => l.type === 'car_loan').length;
@@ -186,9 +208,12 @@ export default function Liabilities() {
   const creditCardCount = liabilities.filter(l => l.type === 'credit_card').length;
   const educationLoanCount = liabilities.filter(l => l.type === 'education_loan').length;
   const otherCount = liabilities.filter(l => l.type === 'other').length;
-  
+
   // Calculate borrowed money total (amount - amountReturned)
-  const borrowedMoneyValue = borrowedMoney.reduce((sum, item) => sum + (item.amount - item.amountReturned), 0);
+  const borrowedMoneyValue = borrowedMoney.reduce(
+    (sum, item) => sum + (item.amount - item.amountReturned),
+    0,
+  );
   const borrowedMoneyCount = borrowedMoney.length;
 
   const liabilityTypes = [
@@ -257,11 +282,14 @@ export default function Liabilities() {
     },
   ];
 
-  const totalLiabilities = liabilities.reduce((sum, l) => sum + l.currentBalance, 0) + borrowedMoneyValue;
+  const totalLiabilities =
+    liabilities.reduce((sum, l) => sum + l.currentBalance, 0) + borrowedMoneyValue;
 
   return (
     <Box>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Box
+        sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+      >
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             My Liabilities
@@ -289,7 +317,7 @@ export default function Liabilities() {
       </Box>
 
       <Grid container spacing={3}>
-        {liabilityTypes.map((liability) => (
+        {liabilityTypes.map(liability => (
           <Grid item xs={12} sm={6} md={3} key={liability.title}>
             <LiabilityCard
               title={liability.title}
@@ -307,12 +335,16 @@ export default function Liabilities() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>Add Liability</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             label="Name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
             margin="normal"
             required
           />
@@ -321,11 +353,11 @@ export default function Liabilities() {
             select
             label="Type"
             value={formData.type}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+            onChange={e => setFormData({ ...formData, type: e.target.value as any })}
             margin="normal"
             required
           >
-            {liabilityTypeOptions.map((type) => (
+            {liabilityTypeOptions.map(type => (
               <MenuItem key={type.value} value={type.value}>
                 {type.label}
               </MenuItem>
@@ -336,7 +368,7 @@ export default function Liabilities() {
             label="Principal Amount"
             type="number"
             value={formData.principalAmount}
-            onChange={(e) => setFormData({ ...formData, principalAmount: e.target.value })}
+            onChange={e => setFormData({ ...formData, principalAmount: e.target.value })}
             margin="normal"
             required
           />
@@ -345,7 +377,7 @@ export default function Liabilities() {
             label="Current Outstanding Balance"
             type="number"
             value={formData.currentBalance}
-            onChange={(e) => setFormData({ ...formData, currentBalance: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentBalance: e.target.value })}
             margin="normal"
             required
           />
@@ -354,7 +386,7 @@ export default function Liabilities() {
             label="Interest Rate (%)"
             type="number"
             value={formData.interestRate}
-            onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+            onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
             margin="normal"
             required
           />
@@ -363,7 +395,7 @@ export default function Liabilities() {
             label="Monthly EMI"
             type="number"
             value={formData.emiAmount}
-            onChange={(e) => setFormData({ ...formData, emiAmount: e.target.value })}
+            onChange={e => setFormData({ ...formData, emiAmount: e.target.value })}
             margin="normal"
             helperText="Optional"
           />
@@ -371,7 +403,7 @@ export default function Liabilities() {
             fullWidth
             label="Lender"
             value={formData.lender}
-            onChange={(e) => setFormData({ ...formData, lender: e.target.value })}
+            onChange={e => setFormData({ ...formData, lender: e.target.value })}
             margin="normal"
             helperText="Optional"
           />
@@ -380,7 +412,7 @@ export default function Liabilities() {
             label="Start Date"
             type="date"
             value={formData.startDate}
-            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, startDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             required
@@ -390,7 +422,7 @@ export default function Liabilities() {
             label="End Date"
             type="date"
             value={formData.endDate}
-            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, endDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             helperText="Optional"

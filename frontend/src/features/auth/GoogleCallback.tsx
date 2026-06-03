@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, Link as RouterLink } from 'react-router-dom';
-import {
-  Alert,
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  Typography,
-  Button,
-} from '@mui/material';
+import { Alert, Box, Card, CardContent, CircularProgress, Typography, Button } from '@mui/material';
 import { useGoogleLoginMutation } from './authAPI';
 import { useAppDispatch } from '@/app/hooks';
 import { setCredentials } from './authSlice';

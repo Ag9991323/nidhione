@@ -122,7 +122,13 @@ export default function RecurringDepositsList() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.bankName || !formData.monthlyAmount || !formData.interestRate || !formData.startDate || !formData.tenure) {
+    if (
+      !formData.bankName ||
+      !formData.monthlyAmount ||
+      !formData.interestRate ||
+      !formData.startDate ||
+      !formData.tenure
+    ) {
       alert('Please fill in all required fields');
       return;
     }
@@ -143,9 +149,12 @@ export default function RecurringDepositsList() {
     }
 
     const startDate = new Date(formData.startDate);
-    const calculatedMaturityDate = calculateMaturityDate(formData.startDate, Number(formData.tenure));
+    const calculatedMaturityDate = calculateMaturityDate(
+      formData.startDate,
+      Number(formData.tenure),
+    );
     const maturityDate = new Date(calculatedMaturityDate);
-    
+
     if (maturityDate <= startDate) {
       alert('Maturity date must be after start date');
       return;
@@ -155,7 +164,9 @@ export default function RecurringDepositsList() {
     if (formData.maturityDate) {
       const calculatedTenure = calculateTenureFromDates(formData.startDate, formData.maturityDate);
       if (Math.abs(calculatedTenure - Number(formData.tenure)) > 1) {
-        alert(`Tenure (${formData.tenure} months) doesn't match the date range (${calculatedTenure} months). Please adjust either tenure or maturity date.`);
+        alert(
+          `Tenure (${formData.tenure} months) doesn't match the date range (${calculatedTenure} months). Please adjust either tenure or maturity date.`,
+        );
         return;
       }
     }
@@ -163,7 +174,7 @@ export default function RecurringDepositsList() {
     try {
       setIsSubmitting(true);
       const finalMaturityDate = formData.maturityDate || calculatedMaturityDate;
-      
+
       if (editingId) {
         await updateRD({
           id: editingId,
@@ -191,7 +202,9 @@ export default function RecurringDepositsList() {
       handleClose();
     } catch (error: any) {
       console.error('Error saving recurring deposit:', error);
-      alert(`Error: ${error?.data?.error || 'Failed to save recurring deposit. Please try again.'}`);
+      alert(
+        `Error: ${error?.data?.error || 'Failed to save recurring deposit. Please try again.'}`,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -308,10 +321,10 @@ export default function RecurringDepositsList() {
         return isMatured ? (
           <Chip label="Matured" size="small" color="success" />
         ) : (
-          <Chip 
-            label={`${daysRemaining} days left`} 
-            size="small" 
-            color="primary" 
+          <Chip
+            label={`${daysRemaining} days left`}
+            size="small"
+            color="primary"
             variant="outlined"
           />
         );
@@ -321,11 +334,7 @@ export default function RecurringDepositsList() {
       id: 'goal',
       label: 'Goal',
       format: (value: any) =>
-        value ? (
-          <Chip label={value.name} size="small" color="primary" variant="outlined" />
-        ) : (
-          '-'
-        ),
+        value ? <Chip label={value.name} size="small" color="primary" variant="outlined" /> : '-',
     },
     {
       id: 'actions',
@@ -372,19 +381,21 @@ export default function RecurringDepositsList() {
               fullWidth
               label="Bank Account"
               value={formData.bankAccountId}
-              onChange={(e) => {
-                const selectedAccount = bankAccountsData?.bankAccounts.find(acc => acc.id === e.target.value);
-                setFormData({ 
-                  ...formData, 
+              onChange={e => {
+                const selectedAccount = bankAccountsData?.bankAccounts.find(
+                  acc => acc.id === e.target.value,
+                );
+                setFormData({
+                  ...formData,
                   bankAccountId: e.target.value,
-                  bankName: selectedAccount?.bankName || ''
+                  bankName: selectedAccount?.bankName || '',
                 });
               }}
               required
               helperText="Select bank account from your saved accounts"
             >
               <MenuItem value="">Select Bank Account</MenuItem>
-              {bankAccountsData?.bankAccounts.map((account) => (
+              {bankAccountsData?.bankAccounts.map(account => (
                 <MenuItem key={account.id} value={account.id}>
                   {account.bankName} - {account.accountType} ({formatCurrency(account.balance)})
                 </MenuItem>
@@ -395,7 +406,7 @@ export default function RecurringDepositsList() {
               label="Monthly Amount"
               type="number"
               value={formData.monthlyAmount}
-              onChange={(e) => setFormData({ ...formData, monthlyAmount: e.target.value })}
+              onChange={e => setFormData({ ...formData, monthlyAmount: e.target.value })}
               required
               inputProps={{ step: '500' }}
             />
@@ -404,7 +415,7 @@ export default function RecurringDepositsList() {
               label="Interest Rate (% p.a.)"
               type="number"
               value={formData.interestRate}
-              onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+              onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
               required
               inputProps={{ step: '0.1' }}
             />
@@ -413,7 +424,7 @@ export default function RecurringDepositsList() {
               label="Tenure (in months)"
               type="number"
               value={formData.tenure}
-              onChange={(e) => {
+              onChange={e => {
                 const tenure = e.target.value;
                 setFormData({ ...formData, tenure });
                 // Auto-calculate maturity date when tenure changes
@@ -431,7 +442,7 @@ export default function RecurringDepositsList() {
               label="Start Date"
               type="date"
               value={formData.startDate}
-              onChange={(e) => {
+              onChange={e => {
                 const startDate = e.target.value;
                 setFormData({ ...formData, startDate });
                 // Auto-calculate maturity date when start date changes
@@ -448,29 +459,42 @@ export default function RecurringDepositsList() {
               label="Maturity Date (Auto-calculated)"
               type="date"
               value={formData.maturityDate}
-              onChange={(e) => setFormData({ ...formData, maturityDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, maturityDate: e.target.value })}
               InputLabelProps={{ shrink: true }}
               helperText="Auto-calculated from tenure. You can adjust if needed."
             />
-            {formData.startDate && formData.monthlyAmount && new Date(formData.startDate) < new Date() && (
-              <Box sx={{ p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
-                <Typography variant="body2" color="info.dark" fontWeight="bold">
-                  Current Deposited Amount: {formatCurrency(calculateCurrentDepositedAmount(formData.startDate, Number(formData.monthlyAmount)))}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Based on {Math.floor((new Date().getTime() - new Date(formData.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30.44))} months elapsed
-                </Typography>
-              </Box>
-            )}
+            {formData.startDate &&
+              formData.monthlyAmount &&
+              new Date(formData.startDate) < new Date() && (
+                <Box sx={{ p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+                  <Typography variant="body2" color="info.dark" fontWeight="bold">
+                    Current Deposited Amount:{' '}
+                    {formatCurrency(
+                      calculateCurrentDepositedAmount(
+                        formData.startDate,
+                        Number(formData.monthlyAmount),
+                      ),
+                    )}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Based on{' '}
+                    {Math.floor(
+                      (new Date().getTime() - new Date(formData.startDate).getTime()) /
+                        (1000 * 60 * 60 * 24 * 30.44),
+                    )}{' '}
+                    months elapsed
+                  </Typography>
+                </Box>
+              )}
             <TextField
               select
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>
@@ -479,9 +503,11 @@ export default function RecurringDepositsList() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : (editingId ? 'Update' : 'Add')}
+            {isSubmitting ? <CircularProgress size={24} /> : editingId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>

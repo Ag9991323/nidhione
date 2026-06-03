@@ -1,5 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import { getAllRecurringDeposits, createRecurringDeposit, updateRecurringDeposit, deleteRecurringDeposit } from '../controllers/recurringDeposits.controller';
+import {
+  getAllRecurringDeposits,
+  createRecurringDeposit,
+  updateRecurringDeposit,
+  deleteRecurringDeposit,
+} from '../controllers/recurringDeposits.controller';
 
 export async function recurringDepositsRoutes(fastify: FastifyInstance) {
   fastify.get('/', { onRequest: [fastify.authenticate] }, getAllRecurringDeposits);

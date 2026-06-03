@@ -16,7 +16,7 @@ const changePasswordSchema = z.object({
 export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -26,11 +26,11 @@ export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
         createdAt: true,
       },
     });
-    
+
     if (!user) {
       return reply.code(404).send({ error: 'User not found' });
     }
-    
+
     return reply.send(user);
   } catch (error) {
     console.error('Get profile error:', error);
@@ -42,7 +42,7 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
   try {
     const userId = (request.user as any).userId;
     const data = updateProfileSchema.parse(request.body);
-    
+
     // Check if email is being changed and if it's already in use
     if (data.email) {
       const existingUser = await prisma.user.findFirst({
@@ -51,12 +51,12 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
           NOT: { id: userId },
         },
       });
-      
+
       if (existingUser) {
         return reply.code(400).send({ error: 'Email already in use' });
       }
     }
-    
+
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -70,7 +70,7 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
         createdAt: true,
       },
     });
-    
+
     return reply.send({ user });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -85,34 +85,34 @@ export async function changePassword(request: FastifyRequest, reply: FastifyRepl
   try {
     const userId = (request.user as any).userId;
     const data = changePasswordSchema.parse(request.body);
-    
+
     // Get current user
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
-    
+
     if (!user) {
       return reply.code(404).send({ error: 'User not found' });
     }
     if (!user.password) {
       return reply.code(400).send({ error: 'Password login is not enabled for this account' });
     }
-    
+
     // Verify current password
     const isValidPassword = await bcrypt.compare(data.currentPassword, user.password);
     if (!isValidPassword) {
       return reply.code(400).send({ error: 'Current password is incorrect' });
     }
-    
+
     // Hash new password
     const hashedPassword = await bcrypt.hash(data.newPassword, 10);
-    
+
     // Update password
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },
     });
-    
+
     return reply.send({ message: 'Password changed successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {

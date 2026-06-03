@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import prisma from '../config/database';
 import { z } from 'zod';
 import { getStockPrice, searchStocks } from '../utils/yahooFinance';
-import { getDailyStockPrice } from '../utils/stockPriceCache';
+import { getDailyStockPrice, warmStockPriceCache } from '../utils/stockPriceCache';
 import { calculateSimpleReturns } from '../utils/xirr';
 
 const createStockSchema = z.object({
@@ -20,7 +20,6 @@ const updateStockSchema = z.object({
   goalId: z.string().optional().nullable(),
 });
 
-
 export async function getAllStocks(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
@@ -37,17 +36,16 @@ export async function getAllStocks(request: FastifyRequest, reply: FastifyReply)
       orderBy: { createdAt: 'desc' },
     });
 
-    // Fetch daily price for each stock symbol (in parallel)
+    // Use cron-maintained currentPrice from DB; fall back to daily cache only if missing
     const stocksWithCurrent = await Promise.all(
-      stocks.map(async (stock) => {
-        const currentPrice = await getDailyStockPrice(stock.symbol);
+      stocks.map(async stock => {
+        let currentPrice = stock.currentPrice;
+        if (currentPrice == null) {
+          currentPrice = await getDailyStockPrice(stock.symbol);
+        }
         const currentValue = currentPrice ? stock.quantity * currentPrice : stock.investedAmount;
-        return {
-          ...stock,
-          currentPrice,
-          currentValue,
-        };
-      })
+        return { ...stock, currentPrice, currentValue };
+      }),
     );
 
     return reply.send({ stocks: stocksWithCurrent });
@@ -61,15 +59,13 @@ export async function createStock(request: FastifyRequest, reply: FastifyReply) 
   try {
     const userId = (request.user as any).userId;
     const data = createStockSchema.parse(request.body);
-    
     const investedAmount = data.quantity * data.averagePrice;
-    
+
     // Fetch current price
     const currentPrice = await getStockPrice(data.symbol);
     const currentValue = currentPrice ? data.quantity * currentPrice : investedAmount;
-    
     const { returns, returnsPercentage } = calculateSimpleReturns(investedAmount, currentValue);
-    
+
     const stock = await prisma.stock.create({
       data: {
         userId,
@@ -95,7 +91,7 @@ export async function createStock(request: FastifyRequest, reply: FastifyReply) 
         },
       },
     });
-    
+
     return reply.code(201).send({ stock });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -111,25 +107,25 @@ export async function updateStock(request: FastifyRequest, reply: FastifyReply) 
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateStockSchema.parse(request.body);
-    
+
     // Check if stock belongs to user
     const existingStock = await prisma.stock.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingStock) {
       return reply.code(404).send({ error: 'Stock not found' });
     }
-    
+
     // Recalculate values if quantity or average price changed
     const quantity = data.quantity ?? existingStock.quantity;
     const averagePrice = data.averagePrice ?? existingStock.averagePrice;
     const investedAmount = quantity * averagePrice;
-    
+
     const currentPrice = await getStockPrice(existingStock.symbol);
     const currentValue = currentPrice ? quantity * currentPrice : investedAmount;
     const { returns, returnsPercentage } = calculateSimpleReturns(investedAmount, currentValue);
-    
+
     const stock = await prisma.stock.update({
       where: { id },
       data: {
@@ -152,7 +148,7 @@ export async function updateStock(request: FastifyRequest, reply: FastifyReply) 
         },
       },
     });
-    
+
     return reply.send({ stock });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -167,20 +163,20 @@ export async function deleteStock(request: FastifyRequest, reply: FastifyReply) 
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     // Check if stock belongs to user
     const existingStock = await prisma.stock.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingStock) {
       return reply.code(404).send({ error: 'Stock not found' });
     }
-    
+
     await prisma.stock.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Stock deleted successfully' });
   } catch (error) {
     console.error('Delete stock error:', error);
@@ -191,12 +187,21 @@ export async function deleteStock(request: FastifyRequest, reply: FastifyReply) 
 export async function searchStock(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { query } = request.query as { query: string };
-    
     if (!query || query.length < 2) {
       return reply.code(400).send({ error: 'Query must be at least 2 characters' });
     }
-    
+
     const results = await searchStocks(query);
+
+    // Cache any prices we already fetched — fire and forget
+    const priceMap = new Map<string, number>();
+    for (const r of results) {
+      if (typeof r.price === 'number') priceMap.set(r.symbol, r.price);
+    }
+    if (priceMap.size > 0) {
+      warmStockPriceCache(priceMap).catch(() => {});
+    }
+
     return reply.send({ results });
   } catch (error) {
     console.error('Search stock error:', error);

@@ -144,7 +144,9 @@ export default function BankAccountsList() {
     {
       id: 'accountType',
       label: 'Account Type',
-      format: (value: any) => <Chip label={value} size="small" color="primary" variant="outlined" />,
+      format: (value: any) => (
+        <Chip label={value} size="small" color="primary" variant="outlined" />
+      ),
     },
     {
       id: 'balance',
@@ -216,7 +218,7 @@ export default function BankAccountsList() {
               fullWidth
               label="Bank Name"
               value={formData.bankName}
-              onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+              onChange={e => setFormData({ ...formData, bankName: e.target.value })}
               required
             />
             <TextField
@@ -224,10 +226,10 @@ export default function BankAccountsList() {
               fullWidth
               label="Account Type"
               value={formData.accountType}
-              onChange={(e) => setFormData({ ...formData, accountType: e.target.value })}
+              onChange={e => setFormData({ ...formData, accountType: e.target.value })}
               required
             >
-              {ACCOUNT_TYPES.map((type) => (
+              {ACCOUNT_TYPES.map(type => (
                 <MenuItem key={type} value={type}>
                   {type}
                 </MenuItem>
@@ -238,7 +240,7 @@ export default function BankAccountsList() {
               label="Balance"
               type="number"
               value={formData.balance}
-              onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
+              onChange={e => setFormData({ ...formData, balance: e.target.value })}
               required
               inputProps={{ step: '1000' }}
             />
@@ -247,10 +249,10 @@ export default function BankAccountsList() {
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>
@@ -259,9 +261,11 @@ export default function BankAccountsList() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : (editingId ? 'Update' : 'Add')}
+            {isSubmitting ? <CircularProgress size={24} /> : editingId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>

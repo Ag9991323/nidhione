@@ -14,17 +14,14 @@ import {
   IconButton,
   Divider,
 } from '@mui/material';
-import {
-  Person,
-  Email,
-  Lock,
-  Save,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
+import { Person, Email, Lock, Save, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { selectCurrentUser, updateUser } from '@/features/auth/authSlice';
-import { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } from './profileAPI';
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
+} from './profileAPI';
 
 export default function Profile() {
   const dispatch = useAppDispatch();
@@ -85,7 +82,11 @@ export default function Profile() {
       setError('');
       setSuccess('');
 
-      if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      if (
+        !passwordForm.currentPassword ||
+        !passwordForm.newPassword ||
+        !passwordForm.confirmPassword
+      ) {
         setError('All password fields are required');
         return;
       }
@@ -118,7 +119,9 @@ export default function Profile() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress size={60} thickness={4} />
       </Box>
     );
@@ -160,7 +163,11 @@ export default function Profile() {
 
         {success && (
           <Fade in={true}>
-            <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }} onClose={() => setSuccess('')}>
+            <Alert
+              severity="success"
+              sx={{ mb: 3, borderRadius: 2 }}
+              onClose={() => setSuccess('')}
+            >
               {success}
             </Alert>
           </Fade>
@@ -207,7 +214,7 @@ export default function Profile() {
                 fullWidth
                 label="Full Name"
                 value={profileForm.name}
-                onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                onChange={e => setProfileForm({ ...profileForm, name: e.target.value })}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -222,7 +229,7 @@ export default function Profile() {
                 label="Email Address"
                 type="email"
                 value={profileForm.email}
-                onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                onChange={e => setProfileForm({ ...profileForm, email: e.target.value })}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -267,7 +274,9 @@ export default function Profile() {
                 label="Current Password"
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                onChange={e =>
+                  setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -292,7 +301,7 @@ export default function Profile() {
                 label="New Password"
                 type={showNewPassword ? 'text' : 'password'}
                 value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -301,10 +310,7 @@ export default function Profile() {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowNewPassword(!showNewPassword)}
-                        edge="end"
-                      >
+                      <IconButton onClick={() => setShowNewPassword(!showNewPassword)} edge="end">
                         {showNewPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -317,7 +323,9 @@ export default function Profile() {
                 label="Confirm New Password"
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={passwordForm.confirmPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                onChange={e =>
+                  setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

@@ -68,20 +68,23 @@ export const mutualFundsAPI = createApi({
     },
   }),
   tagTypes: ['MutualFund'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getMutualFunds: builder.query<{ mutualFunds: MutualFund[] }, void>({
       query: () => '/',
       providesTags: ['MutualFund'],
     }),
     createMutualFund: builder.mutation<{ mutualFund: MutualFund }, CreateMutualFundRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['MutualFund'],
     }),
-    updateMutualFund: builder.mutation<{ mutualFund: MutualFund }, { id: string; data: UpdateMutualFundRequest }>({
+    updateMutualFund: builder.mutation<
+      { mutualFund: MutualFund },
+      { id: string; data: UpdateMutualFundRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -90,14 +93,14 @@ export const mutualFundsAPI = createApi({
       invalidatesTags: ['MutualFund'],
     }),
     deleteMutualFund: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['MutualFund'],
     }),
     searchMutualFund: builder.query<{ results: SearchMFResult[] }, string>({
-      query: (query) => `/search?query=${query}`,
+      query: query => `/search?query=${query}`,
     }),
   }),
 });

@@ -24,10 +24,10 @@ const TrackRecordChart: React.FC<Props> = ({ userId }) => {
   if (error) return <div>Error loading track records.</div>;
   if (!data || data.length === 0) return <div>No track records found.</div>;
 
-  const labels = data.map((rec) => new Date(rec.snapshotDate).toLocaleDateString());
-  const netWorth = data.map((rec) => rec.netWorth);
-  const assets = data.map((rec) => rec.totalAssets);
-  const liabilities = data.map((rec) => rec.totalLiabilities);
+  const labels = data.map(rec => new Date(rec.snapshotDate).toLocaleDateString());
+  const netWorth = data.map(rec => rec.netWorth);
+  const assets = data.map(rec => rec.totalAssets);
+  const liabilities = data.map(rec => rec.totalLiabilities);
 
   const chartData = {
     labels,
@@ -56,13 +56,16 @@ const TrackRecordChart: React.FC<Props> = ({ userId }) => {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <h2>Track Record (Monthly Snapshot)</h2>
-      <Line data={chartData} options={{
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: { enabled: true },
-        },
-      }} />
+      <Line
+        data={chartData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: { enabled: true },
+          },
+        }}
+      />
     </div>
   );
 };

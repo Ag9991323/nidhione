@@ -36,7 +36,19 @@ import {
   CalendarMonth,
   AccountBalanceWallet,
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
 import {
   useGetCashflowsQuery,
   useGetCashflowSummaryQuery,
@@ -47,7 +59,18 @@ import {
 } from './cashflowAPI';
 import { formatCurrency } from '@/utils/formatters';
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#feca57', '#ff6b6b', '#48dbfb', '#ff9ff3'];
+const COLORS = [
+  '#667eea',
+  '#764ba2',
+  '#f093fb',
+  '#4facfe',
+  '#43e97b',
+  '#fa709a',
+  '#feca57',
+  '#ff6b6b',
+  '#48dbfb',
+  '#ff9ff3',
+];
 
 const CATEGORIES = [
   { value: 'food', label: 'Food & Dining', icon: '🍔' },
@@ -86,8 +109,14 @@ export default function CashflowList() {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [tabValue, setTabValue] = useState(0);
 
-  const { data: cashflowsData, isLoading } = useGetCashflowsQuery({ month: selectedMonth, year: selectedYear });
-  const { data: summaryData } = useGetCashflowSummaryQuery({ month: selectedMonth, year: selectedYear });
+  const { data: cashflowsData, isLoading } = useGetCashflowsQuery({
+    month: selectedMonth,
+    year: selectedYear,
+  });
+  const { data: summaryData } = useGetCashflowSummaryQuery({
+    month: selectedMonth,
+    year: selectedYear,
+  });
   const { data: trendData } = useGetMonthlyTrendQuery({ year: selectedYear });
   const [createCashflow] = useCreateCashflowMutation();
   const [updateCashflow] = useUpdateCashflowMutation();
@@ -191,12 +220,13 @@ export default function CashflowList() {
   }
 
   const cashflows = cashflowsData?.cashflows || [];
-  const pieData = summaryData?.categoryBreakdown.map((item: any, index: number) => ({
-    name: getCategoryLabel(item.category),
-    value: item.amount,
-    percentage: item.percentage,
-    color: COLORS[index % COLORS.length],
-  })) || [];
+  const pieData =
+    summaryData?.categoryBreakdown.map((item: any, index: number) => ({
+      name: getCategoryLabel(item.category),
+      value: item.amount,
+      percentage: item.percentage,
+      color: COLORS[index % COLORS.length],
+    })) || [];
 
   return (
     <Box>
@@ -210,13 +240,19 @@ export default function CashflowList() {
             <Select
               value={selectedMonth}
               label="Month"
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              onChange={e => setSelectedMonth(Number(e.target.value))}
             >
-              {Array.from({ length: selectedYear === currentDate.getFullYear() ? currentDate.getMonth() + 1 : 12 }, (_, i) => (
-                <MenuItem key={i + 1} value={i + 1}>
-                  {new Date(2000, i).toLocaleString('default', { month: 'long' })}
-                </MenuItem>
-              ))}
+              {Array.from(
+                {
+                  length:
+                    selectedYear === currentDate.getFullYear() ? currentDate.getMonth() + 1 : 12,
+                },
+                (_, i) => (
+                  <MenuItem key={i + 1} value={i + 1}>
+                    {new Date(2000, i).toLocaleString('default', { month: 'long' })}
+                  </MenuItem>
+                ),
+              )}
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 100 }}>
@@ -224,7 +260,7 @@ export default function CashflowList() {
             <Select
               value={selectedYear}
               label="Year"
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              onChange={e => setSelectedYear(Number(e.target.value))}
             >
               {Array.from({ length: 5 }, (_, i) => (
                 <MenuItem key={currentDate.getFullYear() - i} value={currentDate.getFullYear() - i}>
@@ -251,8 +287,17 @@ export default function CashflowList() {
               }}
             >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Typography variant="body2" sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}
+                  >
                     Total Income
                   </Typography>
                   <TrendingUp />
@@ -274,8 +319,17 @@ export default function CashflowList() {
               }}
             >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Typography variant="body2" sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}
+                  >
                     Total Spend
                   </Typography>
                   <TrendingDown />
@@ -297,8 +351,17 @@ export default function CashflowList() {
               }}
             >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Typography variant="body2" sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}
+                  >
                     Total Investment
                   </Typography>
                   <TrendingUp />
@@ -320,8 +383,17 @@ export default function CashflowList() {
               }}
             >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Typography variant="body2" sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}
+                  >
                     Balance
                   </Typography>
                   <AccountBalanceWallet />
@@ -335,10 +407,22 @@ export default function CashflowList() {
         </Grid>
         <Grid item xs={12} md={3}>
           <Grow in={true} timeout={950}>
-            <Card elevation={0} sx={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)', color: 'white' }}>
+            <Card
+              elevation={0}
+              sx={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)', color: 'white' }}
+            >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Typography variant="body2" sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ opacity: 0.9, textTransform: 'uppercase', fontWeight: 500 }}
+                  >
                     Transactions
                   </Typography>
                   <Receipt />
@@ -365,27 +449,23 @@ export default function CashflowList() {
       <TabPanel value={tabValue} index={0}>
         <DataTable
           columns={[
-            { id: 'date', label: 'Date', format: (v) => new Date(v).toLocaleDateString() },
+            { id: 'date', label: 'Date', format: v => new Date(v).toLocaleDateString() },
             {
               id: 'category',
               label: 'Category',
-              format: (v) => (
+              format: v => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <span>{getCategoryIcon(v)}</span>
                   <Typography variant="body2">{getCategoryLabel(v)}</Typography>
                 </Box>
               ),
             },
-            { id: 'description', label: 'Description', format: (v) => v || '-' },
+            { id: 'description', label: 'Description', format: v => v || '-' },
             {
               id: 'type',
               label: 'Type',
-              format: (v) => (
-                <Chip
-                  label={v}
-                  size="small"
-                  color={v === 'income' ? 'success' : 'error'}
-                />
+              format: v => (
+                <Chip label={v} size="small" color={v === 'income' ? 'success' : 'error'} />
               ),
             },
             {
@@ -397,7 +477,8 @@ export default function CashflowList() {
                   fontWeight="600"
                   color={row.type === 'income' ? 'success.main' : 'error.main'}
                 >
-                  {row.type === 'income' ? '+' : '-'}{formatCurrency(v)}
+                  {row.type === 'income' ? '+' : '-'}
+                  {formatCurrency(v)}
                 </Typography>
               ),
             },
@@ -438,7 +519,7 @@ export default function CashflowList() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={(entry) => `${entry.name}: ${entry.percentage.toFixed(1)}%`}
+                      label={entry => `${entry.name}: ${entry.percentage.toFixed(1)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
@@ -532,7 +613,12 @@ export default function CashflowList() {
               fullWidth
               label="Type"
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value as 'income' | 'spend' | 'investment' })}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  type: e.target.value as 'income' | 'spend' | 'investment',
+                })
+              }
               required
             >
               <MenuItem value="income">Income</MenuItem>
@@ -544,7 +630,7 @@ export default function CashflowList() {
               label="Amount"
               type="number"
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              onChange={e => setFormData({ ...formData, amount: e.target.value })}
               required
               inputProps={{ step: '0.01' }}
             />
@@ -553,10 +639,10 @@ export default function CashflowList() {
               fullWidth
               label="Category"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={e => setFormData({ ...formData, category: e.target.value })}
               required
             >
-              {CATEGORIES.map((cat) => (
+              {CATEGORIES.map(cat => (
                 <MenuItem key={cat.value} value={cat.value}>
                   {cat.icon} {cat.label}
                 </MenuItem>
@@ -566,7 +652,7 @@ export default function CashflowList() {
               fullWidth
               label="Description (Optional)"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               multiline
               rows={2}
             />
@@ -575,11 +661,11 @@ export default function CashflowList() {
               label="Date"
               type="date"
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              onChange={e => setFormData({ ...formData, date: e.target.value })}
               required
               InputLabelProps={{ shrink: true }}
               inputProps={{
-                max: new Date().toISOString().split('T')[0]
+                max: new Date().toISOString().split('T')[0],
               }}
             />
             {/* ...existing code... */}

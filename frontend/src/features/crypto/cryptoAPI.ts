@@ -53,13 +53,13 @@ export const cryptoAPI = createApi({
     },
   }),
   tagTypes: ['Crypto'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getCrypto: builder.query<Crypto[], void>({
       query: () => '/crypto',
       providesTags: ['Crypto'],
     }),
     createCrypto: builder.mutation<Crypto, CreateCryptoRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/crypto',
         method: 'POST',
         body: data,
@@ -75,7 +75,7 @@ export const cryptoAPI = createApi({
       invalidatesTags: ['Crypto'],
     }),
     deleteCrypto: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/crypto/${id}`,
         method: 'DELETE',
       }),

@@ -1,5 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import { getAllBankAccounts, createBankAccount, updateBankAccount, deleteBankAccount } from '../controllers/bankAccounts.controller';
+import {
+  getAllBankAccounts,
+  createBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+} from '../controllers/bankAccounts.controller';
 
 export async function bankAccountsRoutes(fastify: FastifyInstance) {
   fastify.get('/', { onRequest: [fastify.authenticate] }, getAllBankAccounts);

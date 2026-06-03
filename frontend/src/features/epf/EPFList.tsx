@@ -139,11 +139,7 @@ export default function EPFList() {
       id: 'goal',
       label: 'Goal',
       format: (value: any) =>
-        value ? (
-          <Chip label={value.name} size="small" color="primary" variant="outlined" />
-        ) : (
-          '-'
-        ),
+        value ? <Chip label={value.name} size="small" color="primary" variant="outlined" /> : '-',
     },
     {
       id: 'actions',
@@ -190,7 +186,7 @@ export default function EPFList() {
               label="Current Balance"
               type="number"
               value={formData.balance}
-              onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
+              onChange={e => setFormData({ ...formData, balance: e.target.value })}
               required
               inputProps={{ step: '1000' }}
               helperText="Enter your current EPF balance"
@@ -200,10 +196,10 @@ export default function EPFList() {
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
               <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
                   {goal.name}
                 </MenuItem>
@@ -212,9 +208,11 @@ export default function EPFList() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : (editingId ? 'Update' : 'Add')}
+            {isSubmitting ? <CircularProgress size={24} /> : editingId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>

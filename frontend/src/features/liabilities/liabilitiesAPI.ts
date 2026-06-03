@@ -55,13 +55,13 @@ export const liabilitiesAPI = createApi({
     },
   }),
   tagTypes: ['Liability'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getLiabilities: builder.query<Liability[], void>({
       query: () => '/liabilities',
       providesTags: ['Liability'],
     }),
     createLiability: builder.mutation<Liability, CreateLiabilityRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/liabilities',
         method: 'POST',
         body: data,
@@ -77,7 +77,7 @@ export const liabilitiesAPI = createApi({
       invalidatesTags: ['Liability'],
     }),
     deleteLiability: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/liabilities/${id}`,
         method: 'DELETE',
       }),

@@ -1,8 +1,19 @@
 import { FastifyInstance } from 'fastify';
-import { register, login, getProfile, googleLogin } from '../controllers/auth.controller';
+import {
+  register,
+  login,
+  getProfile,
+  googleLogin,
+  sendOtp,
+  forgotPassword,
+  resetPassword,
+} from '../controllers/auth.controller';
 
 export async function authRoutes(fastify: FastifyInstance) {
+  fastify.post('/send-otp', sendOtp);
   fastify.post('/register', register);
+  fastify.post('/forgot-password', forgotPassword);
+  fastify.post('/reset-password', resetPassword);
   fastify.post('/login', login);
   fastify.post('/google', googleLogin);
   fastify.get('/profile', { onRequest: [fastify.authenticate] }, getProfile);

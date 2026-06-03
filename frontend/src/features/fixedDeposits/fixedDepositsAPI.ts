@@ -51,20 +51,25 @@ export const fixedDepositsAPI = createApi({
     },
   }),
   tagTypes: ['FixedDeposit'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getFixedDeposits: builder.query<{ fixedDeposits: FixedDeposit[] }, void>({
       query: () => '/',
       providesTags: ['FixedDeposit'],
     }),
-    createFixedDeposit: builder.mutation<{ fixedDeposit: FixedDeposit }, CreateFixedDepositRequest>({
-      query: (data) => ({
-        url: '/',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['FixedDeposit'],
-    }),
-    updateFixedDeposit: builder.mutation<{ fixedDeposit: FixedDeposit }, { id: string; data: UpdateFixedDepositRequest }>({
+    createFixedDeposit: builder.mutation<{ fixedDeposit: FixedDeposit }, CreateFixedDepositRequest>(
+      {
+        query: data => ({
+          url: '/',
+          method: 'POST',
+          body: data,
+        }),
+        invalidatesTags: ['FixedDeposit'],
+      },
+    ),
+    updateFixedDeposit: builder.mutation<
+      { fixedDeposit: FixedDeposit },
+      { id: string; data: UpdateFixedDepositRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -73,7 +78,7 @@ export const fixedDepositsAPI = createApi({
       invalidatesTags: ['FixedDeposit'],
     }),
     deleteFixedDeposit: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

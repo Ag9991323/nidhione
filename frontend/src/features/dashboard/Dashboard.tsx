@@ -1,4 +1,16 @@
-import { Grid, Paper, Typography, Box, Card, CardContent, CircularProgress, Container, Chip, Fade, Grow } from '@mui/material';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Container,
+  Chip,
+  Fade,
+  Grow,
+} from '@mui/material';
 import {
   TrendingUp,
   AccountBalance,
@@ -7,11 +19,36 @@ import {
   ShowChart,
   CreditCard,
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { useGetDashboardQuery, useGetAssetAllocationQuery, useGetPerformanceQuery } from './dashboardAPI';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
+import {
+  useGetDashboardQuery,
+  useGetAssetAllocationQuery,
+  useGetPerformanceQuery,
+} from './dashboardAPI';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#feca57', '#ff6b6b'];
+const COLORS = [
+  '#667eea',
+  '#764ba2',
+  '#f093fb',
+  '#4facfe',
+  '#43e97b',
+  '#fa709a',
+  '#feca57',
+  '#ff6b6b',
+];
 
 interface StatCardProps {
   title: string;
@@ -52,8 +89,18 @@ function StatCard({ title, value, icon, gradient, subtitle, delay = 0 }: StatCar
         }}
       >
         <CardContent sx={{ position: 'relative', zIndex: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-            <Typography variant="body2" sx={{ opacity: 0.9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.5 }}
+            >
               {title}
             </Typography>
             <Box
@@ -98,32 +145,34 @@ export default function Dashboard() {
 
   if (isDashboardLoading || isAllocationLoading || isPerformanceLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress size={60} thickness={4} />
       </Box>
     );
   }
 
   const returns = dashboardData?.totalReturns || 0;
-  const returnsGradient = returns >= 0 
-    ? '#11998e, #38ef7d' 
-    : '#ee0979, #ff6a00';
+  const returnsGradient = returns >= 0 ? '#11998e, #38ef7d' : '#ee0979, #ff6a00';
 
   return (
-    <Box sx={{ 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      minHeight: '100vh',
-      pb: 4,
-      pt: 3,
-    }}>
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        minHeight: '100vh',
+        pb: 4,
+        pt: 3,
+      }}
+    >
       <Container maxWidth="xl">
         {/* Header */}
         <Fade in={true} timeout={600}>
           <Box sx={{ mb: 4 }}>
-            <Typography 
-              variant="h3" 
-              fontWeight="700" 
-              sx={{ 
+            <Typography
+              variant="h3"
+              fontWeight="700"
+              sx={{
                 color: 'white',
                 mb: 1,
                 textShadow: '0 2px 10px rgba(0,0,0,0.2)',
@@ -131,9 +180,9 @@ export default function Dashboard() {
             >
               Portfolio Dashboard
             </Typography>
-            <Typography 
-              variant="body1" 
-              sx={{ 
+            <Typography
+              variant="body1"
+              sx={{
                 color: 'rgba(255,255,255,0.9)',
               }}
             >
@@ -167,7 +216,13 @@ export default function Dashboard() {
             <StatCard
               title="Total Returns"
               value={formatCurrency(returns)}
-              icon={returns >= 0 ? <TrendingUp sx={{ fontSize: 28 }} /> : <TrendingDown sx={{ fontSize: 28 }} />}
+              icon={
+                returns >= 0 ? (
+                  <TrendingUp sx={{ fontSize: 28 }} />
+                ) : (
+                  <TrendingDown sx={{ fontSize: 28 }} />
+                )
+              }
               gradient={returnsGradient}
               subtitle={formatPercentage(dashboardData?.totalReturnsPercentage || 0)}
               delay={200}
@@ -186,7 +241,7 @@ export default function Dashboard() {
             <StatCard
               title="Total Assets"
               value={String(
-                Object.values(dashboardData?.assetCounts || {}).reduce((a, b) => a + b, 0)
+                Object.values(dashboardData?.assetCounts || {}).reduce((a, b) => a + b, 0),
               )}
               icon={<ShowChart sx={{ fontSize: 28 }} />}
               gradient="#4facfe, #00f2fe"
@@ -200,10 +255,10 @@ export default function Dashboard() {
           {/* Asset Allocation */}
           <Grid item xs={12} md={6}>
             <Grow in={true} timeout={1000}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 3, 
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
                   height: 450,
                   borderRadius: 3,
                   background: 'rgba(255, 255, 255, 0.95)',
@@ -237,7 +292,7 @@ export default function Dashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={(entry) => `${entry.name}`}
+                        label={entry => `${entry.name}`}
                         outerRadius={100}
                         innerRadius={60}
                         fill="#8884d8"
@@ -248,7 +303,7 @@ export default function Dashboard() {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{
                           borderRadius: 8,
@@ -256,15 +311,18 @@ export default function Dashboard() {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                         }}
                       />
-                      <Legend 
-                        verticalAlign="bottom"
-                        height={36}
-                        iconType="circle"
-                      />
+                      <Legend verticalAlign="bottom" height={36} iconType="circle" />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '88%' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '88%',
+                    }}
+                  >
                     <Typography color="textSecondary">No assets to display</Typography>
                   </Box>
                 )}
@@ -275,10 +333,10 @@ export default function Dashboard() {
           {/* Performance Comparison */}
           <Grid item xs={12} md={6}>
             <Grow in={true} timeout={1000} style={{ transformOrigin: '0 0 0' }}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 3, 
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
                   height: 450,
                   borderRadius: 3,
                   background: 'rgba(255, 255, 255, 0.95)',
@@ -309,33 +367,33 @@ export default function Dashboard() {
                     <BarChart data={performanceData.performance}>
                       <defs>
                         <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#667eea" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#667eea" stopOpacity={0.4}/>
+                          <stop offset="5%" stopColor="#667eea" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#667eea" stopOpacity={0.4} />
                         </linearGradient>
                         <linearGradient id="colorReturns" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#43e97b" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#43e97b" stopOpacity={0.4}/>
+                          <stop offset="5%" stopColor="#43e97b" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#43e97b" stopOpacity={0.4} />
                         </linearGradient>
                         <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ff6b6b" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#ff6b6b" stopOpacity={0.4}/>
+                          <stop offset="5%" stopColor="#ff6b6b" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#ff6b6b" stopOpacity={0.4} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis 
-                        dataKey="name" 
+                      <XAxis
+                        dataKey="name"
                         tick={{ fill: '#666', fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                         angle={-15}
                         textAnchor="end"
                         height={60}
                       />
-                      <YAxis 
-                        tickFormatter={(value) => formatCurrency(value)}
+                      <YAxis
+                        tickFormatter={value => formatCurrency(value)}
                         tick={{ fill: '#666' }}
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{
                           borderRadius: 8,
@@ -343,35 +401,33 @@ export default function Dashboard() {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                         }}
                       />
-                      <Legend 
-                        verticalAlign="top"
-                        height={36}
-                        iconType="rect"
-                      />
-                      <Bar 
-                        dataKey="invested" 
+                      <Legend verticalAlign="top" height={36} iconType="rect" />
+                      <Bar
+                        dataKey="invested"
                         stackId="a"
-                        fill="url(#colorInvested)" 
-                        name="Invested" 
+                        fill="url(#colorInvested)"
+                        name="Invested"
                         radius={[0, 0, 0, 0]}
                       />
-                      <Bar 
-                        dataKey="returns" 
-                        stackId="a"
-                        name="Returns" 
-                        radius={[8, 8, 0, 0]}
-                      >
+                      <Bar dataKey="returns" stackId="a" name="Returns" radius={[8, 8, 0, 0]}>
                         {performanceData.performance.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.returns >= 0 ? "url(#colorReturns)" : "url(#colorLoss)"} 
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.returns >= 0 ? 'url(#colorReturns)' : 'url(#colorLoss)'}
                           />
                         ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '88%' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '88%',
+                    }}
+                  >
                     <Typography color="textSecondary">No performance data to display</Typography>
                   </Box>
                 )}

@@ -16,14 +16,19 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, TrendingUp, TrendingDown } from '@mui/icons-material';
 import { DataTable } from '@/shared/components';
-import { useGetStocksQuery, useCreateStockMutation, useUpdateStockMutation, useDeleteStockMutation, useLazySearchStockQuery, StockSearchResult } from './stocksAPI';
+import {
+  useGetStocksQuery,
+  useCreateStockMutation,
+  useUpdateStockMutation,
+  useDeleteStockMutation,
+  useLazySearchStockQuery,
+  StockSearchResult,
+} from './stocksAPI';
 import { useGetGoalsQuery } from '@/features/goals/goalsAPI';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 import { debounce } from 'lodash';
-
 const RECENT_SEARCHES_KEY = 'stocks_recent_searches';
 const RECENT_SEARCHES_LIMIT = 5;
-
 export default function StocksList() {
   const { data, isLoading } = useGetStocksQuery();
   const { data: goalsData } = useGetGoalsQuery();
@@ -31,7 +36,6 @@ export default function StocksList() {
   const [updateStock] = useUpdateStockMutation();
   const [deleteStock] = useDeleteStockMutation();
   const [searchStocks, { data: searchResults, isLoading: isSearching }] = useLazySearchStockQuery();
-
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockSearchResult | null>(null);
@@ -56,30 +60,30 @@ export default function StocksList() {
     }
   });
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     debounce((query: string) => {
       if (query && query.length >= 2) {
         searchStocks(query);
       }
     }, 300),
-    [searchStocks]
+    [searchStocks],
   );
-
+  // Debounced search function const debouncedSearch = useCallback( debounce((query: string) => { if (query && query.length >= 2) { searchStocks(query); } }, 300), [searchStocks] );
   const handleStockSearch = (_event: React.SyntheticEvent, value: string) => {
     setInputValue(value);
     debouncedSearch(value);
   };
-
-  const handleStockSelect = (_event: React.SyntheticEvent, value: string | StockSearchResult | null) => {
+  const handleStockSelect = (
+    _event: React.SyntheticEvent,
+    value: string | StockSearchResult | null,
+  ) => {
     if (value && typeof value !== 'string') {
       const nextRecent = [
         value,
-        ...recentSearches.filter((item) => item.symbol !== value.symbol),
+        ...recentSearches.filter(item => item.symbol !== value.symbol),
       ].slice(0, RECENT_SEARCHES_LIMIT);
       setRecentSearches(nextRecent);
       localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(nextRecent));
-
       setSelectedStock(value);
       setFormData({
         ...formData,
@@ -89,7 +93,6 @@ export default function StocksList() {
       });
     }
   };
-
   const handleOpen = () => {
     setOpen(true);
     setSelectedStock(null);
@@ -109,7 +112,6 @@ export default function StocksList() {
       goalId: '',
     });
   };
-
   const handleEdit = (stock: any) => {
     setEditingId(stock.id);
     setFormData({
@@ -122,7 +124,6 @@ export default function StocksList() {
     });
     setOpen(true);
   };
-
   const handleSubmit = async () => {
     try {
       if (editingId) {
@@ -153,7 +154,6 @@ export default function StocksList() {
       console.error('Error saving stock:', error);
     }
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this stock?')) {
       try {
@@ -167,11 +167,11 @@ export default function StocksList() {
   const searchOptions = useMemo(() => {
     const results = searchResults?.results || [];
     const normalized = inputValue.trim().toLowerCase();
-    const withFilter = results.filter((item) => {
+    const withFilter = results.filter(item => {
       if (exchangeFilter === 'ALL') return true;
       return item.exchange === exchangeFilter;
     });
-    const scored = withFilter.map((item) => {
+    const scored = withFilter.map(item => {
       const symbol = item.symbol.toLowerCase();
       const name = item.name.toLowerCase();
       let score = 4;
@@ -181,55 +181,64 @@ export default function StocksList() {
       else if (normalized && (symbol.includes(normalized) || name.includes(normalized))) score = 3;
       return { item, score };
     });
-    return scored.sort((a, b) => a.score - b.score).map((entry) => entry.item);
+    return scored.sort((a, b) => a.score - b.score).map(entry => entry.item);
   }, [searchResults, inputValue, exchangeFilter]);
-
   const recentFiltered =
-    exchangeFilter === 'ALL' ? recentSearches : recentSearches.filter((item) => item.exchange === exchangeFilter);
+    exchangeFilter === 'ALL'
+      ? recentSearches
+      : recentSearches.filter(item => item.exchange === exchangeFilter);
   const displayOptions = inputValue.trim().length >= 2 ? searchOptions : recentFiltered;
-
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress />
+        {' '}
+        <CircularProgress />{' '}
       </Box>
     );
   }
-
   return (
     <Box>
+      {' '}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        {' '}
         <Typography variant="h4" fontWeight="bold">
-          Stocks
-        </Typography>
+          {' '}
+          Stocks{' '}
+        </Typography>{' '}
         <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Stock
-        </Button>
+          {' '}
+          Add Stock{' '}
+        </Button>{' '}
       </Box>
-
       <DataTable
         columns={[
           { id: 'companyName', label: 'Company' },
           { id: 'symbol', label: 'Symbol' },
-          { 
-            id: 'exchange', 
-            label: 'Exchange', 
-            format: (v) => <Chip label={v} size="small" />
-          },
+          { id: 'exchange', label: 'Exchange', format: v => <Chip label={v} size="small" /> },
           { id: 'quantity', label: 'Quantity', align: 'right' },
-          { id: 'averagePrice', label: 'Avg Price', align: 'right', format: (v) => formatCurrency(v) },
-          { 
-            id: 'currentPrice', 
-            label: 'Current Price', 
-            align: 'right', 
-            format: (v) => v ? formatCurrency(v) : '-'
+          {
+            id: 'averagePrice',
+            label: 'Avg Price',
+            align: 'right',
+            format: v => formatCurrency(v),
           },
-          { id: 'investedAmount', label: 'Invested', align: 'right', format: (v) => formatCurrency(v) },
-          { 
-            id: 'currentValue', 
-            label: 'Current Value', 
-            align: 'right', 
-            format: (v) => v ? formatCurrency(v) : '-'
+          {
+            id: 'currentPrice',
+            label: 'Current Price',
+            align: 'right',
+            format: v => (v ? formatCurrency(v) : '-'),
+          },
+          {
+            id: 'investedAmount',
+            label: 'Invested',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
+          {
+            id: 'currentValue',
+            label: 'Current Value',
+            align: 'right',
+            format: v => (v ? formatCurrency(v) : '-'),
           },
           {
             id: 'returns',
@@ -238,19 +247,20 @@ export default function StocksList() {
             format: (_, row) =>
               row.returns !== null ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                  {' '}
                   {row.returns >= 0 ? (
                     <TrendingUp sx={{ color: 'success.main', mr: 0.5, fontSize: 18 }} />
                   ) : (
                     <TrendingDown sx={{ color: 'error.main', mr: 0.5, fontSize: 18 }} />
-                  )}
+                  )}{' '}
                   <Typography
                     variant="body2"
                     color={row.returns >= 0 ? 'success.main' : 'error.main'}
                   >
-                    {formatCurrency(row.returns)}
-                    <br />
-                    {formatPercentage(row.returnsPercentage || 0)}
-                  </Typography>
+                    {' '}
+                    {formatCurrency(row.returns)} <br />{' '}
+                    {formatPercentage(row.returnsPercentage || 0)}{' '}
+                  </Typography>{' '}
                 </Box>
               ) : (
                 '-'
@@ -259,7 +269,8 @@ export default function StocksList() {
           {
             id: 'goal',
             label: 'Goal',
-            format: (v) => v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-',
+            format: v =>
+              v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-',
           },
           {
             id: 'actions',
@@ -267,12 +278,15 @@ export default function StocksList() {
             align: 'right',
             format: (_, row) => (
               <>
+                {' '}
                 <IconButton size="small" onClick={() => handleEdit(row)}>
-                  <Edit fontSize="small" />
-                </IconButton>
+                  {' '}
+                  <Edit fontSize="small" />{' '}
+                </IconButton>{' '}
                 <IconButton size="small" onClick={() => handleDelete(row.id)}>
-                  <Delete fontSize="small" />
-                </IconButton>
+                  {' '}
+                  <Delete fontSize="small" />{' '}
+                </IconButton>{' '}
               </>
             ),
           },
@@ -281,17 +295,19 @@ export default function StocksList() {
         isLoading={isLoading}
         emptyMessage="No stocks found. Add your first stock to get started!"
       />
-
-      {/* Add/Edit Dialog */}
+      {/* Add/Edit Dialog */}{' '}
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>{editingId ? 'Edit Stock' : 'Add Stock'}</DialogTitle>
+        {' '}
+        <DialogTitle>{editingId ? 'Edit Stock' : 'Add Stock'}</DialogTitle>{' '}
         <DialogContent>
+          {' '}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            {' '}
             {!editingId && (
               <Autocomplete
                 freeSolo
                 options={displayOptions}
-                getOptionLabel={(option) =>
+                getOptionLabel={option =>
                   typeof option === 'string' ? option : `${option.name} (${option.symbol})`
                 }
                 loading={isSearching}
@@ -302,7 +318,7 @@ export default function StocksList() {
                 autoHighlight
                 openOnFocus
                 noOptionsText="No results. Try symbol or full name."
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField
                     {...params}
                     label="Search Stock"
@@ -317,8 +333,9 @@ export default function StocksList() {
                       ...params.InputProps,
                       endAdornment: (
                         <>
-                          {isSearching ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
+                          {' '}
+                          {isSearching ? <CircularProgress color="inherit" size={20} /> : null}{' '}
+                          {params.InputProps.endAdornment}{' '}
                         </>
                       ),
                     }}
@@ -326,103 +343,106 @@ export default function StocksList() {
                 )}
                 renderOption={(props, option) => (
                   <li {...props} key={option.symbol}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
-                      <Box>
-                        <Typography variant="body2" fontWeight="bold">
-                          {option.name}
-                        </Typography>
-                        <Typography variant="caption" color="textSecondary">
-                          {option.symbol} • {option.exchange}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" fontWeight="bold" color="text.primary" sx={{ whiteSpace: 'nowrap' }}>
-                        {typeof option.price === 'number' ? formatCurrency(option.price) : '-'}
-                      </Typography>
-                    </Box>
+                    {' '}
+                    <Box>
+                      {' '}
+                      <Typography variant="body2" fontWeight="medium">
+                        {' '}
+                        {option.name}{' '}
+                      </Typography>{' '}
+                      <Typography variant="caption" color="textSecondary">
+                        {' '}
+                        {option.symbol} • {option.exchange}{' '}
+                        {typeof option.price === 'number'
+                          ? ` • ₹${option.price.toLocaleString('en-IN')}`
+                          : ''}{' '}
+                      </Typography>{' '}
+                    </Box>{' '}
                   </li>
                 )}
               />
-            )}
+            )}{' '}
             {!editingId && (
               <Box sx={{ display: 'flex', gap: 1 }}>
+                {' '}
                 <Chip
                   label="All"
                   color={exchangeFilter === 'ALL' ? 'primary' : 'default'}
                   variant={exchangeFilter === 'ALL' ? 'filled' : 'outlined'}
                   onClick={() => setExchangeFilter('ALL')}
                   size="small"
-                />
+                />{' '}
                 <Chip
                   label="NSE"
                   color={exchangeFilter === 'NSE' ? 'primary' : 'default'}
                   variant={exchangeFilter === 'NSE' ? 'filled' : 'outlined'}
                   onClick={() => setExchangeFilter('NSE')}
                   size="small"
-                />
+                />{' '}
                 <Chip
                   label="BSE"
                   color={exchangeFilter === 'BSE' ? 'primary' : 'default'}
                   variant={exchangeFilter === 'BSE' ? 'filled' : 'outlined'}
                   onClick={() => setExchangeFilter('BSE')}
                   size="small"
-                />
+                />{' '}
               </Box>
-            )}
+            )}{' '}
             {editingId && (
               <>
-                <TextField
-                  fullWidth
-                  label="Symbol"
-                  value={formData.symbol}
-                  disabled
-                />
+                {' '}
+                <TextField fullWidth label="Symbol" value={formData.symbol} disabled />{' '}
                 <TextField
                   fullWidth
                   label="Company Name"
                   value={formData.companyName}
                   disabled
-                />
+                />{' '}
               </>
-            )}
+            )}{' '}
             <TextField
               fullWidth
               label="Quantity"
               type="number"
               value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+              onChange={e => setFormData({ ...formData, quantity: e.target.value })}
               required
-            />
+            />{' '}
             <TextField
               fullWidth
               label="Average Price"
               type="number"
               value={formData.averagePrice}
-              onChange={(e) => setFormData({ ...formData, averagePrice: e.target.value })}
+              onChange={e => setFormData({ ...formData, averagePrice: e.target.value })}
               required
-            />
+            />{' '}
             <TextField
               select
               fullWidth
               label="Link to Goal (Optional)"
               value={formData.goalId}
-              onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+              onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             >
-              <MenuItem value="">None</MenuItem>
-              {goalsData?.goals.map((goal) => (
+              {' '}
+              <MenuItem value="">None</MenuItem>{' '}
+              {goalsData?.goals.map(goal => (
                 <MenuItem key={goal.id} value={goal.id}>
-                  {goal.name}
+                  {' '}
+                  {goal.name}{' '}
                 </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-        </DialogContent>
+              ))}{' '}
+            </TextField>{' '}
+          </Box>{' '}
+        </DialogContent>{' '}
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          {' '}
+          <Button onClick={handleClose}>Cancel</Button>{' '}
           <Button onClick={handleSubmit} variant="contained">
-            {editingId ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+            {' '}
+            {editingId ? 'Update' : 'Add'}{' '}
+          </Button>{' '}
+        </DialogActions>{' '}
+      </Dialog>{' '}
     </Box>
   );
 }

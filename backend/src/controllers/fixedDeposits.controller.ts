@@ -23,7 +23,7 @@ const updateFDSchema = z.object({
 export async function getAllFixedDeposits(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const fixedDeposits = await prisma.fixedDeposit.findMany({
       where: { userId },
       include: {
@@ -36,7 +36,7 @@ export async function getAllFixedDeposits(request: FastifyRequest, reply: Fastif
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send({ fixedDeposits });
   } catch (error) {
     console.error('Get fixed deposits error:', error);
@@ -48,15 +48,15 @@ export async function createFixedDeposit(request: FastifyRequest, reply: Fastify
   try {
     const userId = (request.user as any).userId;
     const data = createFDSchema.parse(request.body);
-    
+
     const startDate = new Date(data.startDate);
     const maturityDate = new Date(data.maturityDate);
-    
+
     // Calculate maturity amount: A = P(1 + r/n)^(nt)
     // For simple calculation: A = P * (1 + r * t)
     const years = (maturityDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
     const maturityAmount = data.amount * (1 + (data.interestRate / 100) * years);
-    
+
     const fixedDeposit = await prisma.fixedDeposit.create({
       data: {
         userId,
@@ -77,7 +77,7 @@ export async function createFixedDeposit(request: FastifyRequest, reply: Fastify
         },
       },
     });
-    
+
     return reply.code(201).send({ fixedDeposit });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -93,24 +93,24 @@ export async function updateFixedDeposit(request: FastifyRequest, reply: Fastify
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateFDSchema.parse(request.body);
-    
+
     const existingFD = await prisma.fixedDeposit.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingFD) {
       return reply.code(404).send({ error: 'Fixed deposit not found' });
     }
-    
+
     const amount = data.amount ?? existingFD.amount;
     const interestRate = data.interestRate ?? existingFD.interestRate;
     const startDate = data.startDate ? new Date(data.startDate) : existingFD.startDate;
     const maturityDate = data.maturityDate ? new Date(data.maturityDate) : existingFD.maturityDate;
-    
+
     // Recalculate maturity amount
     const years = (maturityDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
     const maturityAmount = amount * (1 + (interestRate / 100) * years);
-    
+
     const fixedDeposit = await prisma.fixedDeposit.update({
       where: { id },
       data: {
@@ -131,7 +131,7 @@ export async function updateFixedDeposit(request: FastifyRequest, reply: Fastify
         },
       },
     });
-    
+
     return reply.send({ fixedDeposit });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -146,19 +146,19 @@ export async function deleteFixedDeposit(request: FastifyRequest, reply: Fastify
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     const existingFD = await prisma.fixedDeposit.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingFD) {
       return reply.code(404).send({ error: 'Fixed deposit not found' });
     }
-    
+
     await prisma.fixedDeposit.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Fixed deposit deleted successfully' });
   } catch (error) {
     console.error('Delete fixed deposit error:', error);

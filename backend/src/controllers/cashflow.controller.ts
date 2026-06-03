@@ -4,7 +4,21 @@ import { z } from 'zod';
 
 const createCashflowSchema = z.object({
   amount: z.number().positive(),
-  category: z.enum(['food', 'transport', 'utilities', 'entertainment', 'healthcare', 'education', 'shopping', 'bills', 'investment', 'salary', 'rent', 'parents', 'other']),
+  category: z.enum([
+    'food',
+    'transport',
+    'utilities',
+    'entertainment',
+    'healthcare',
+    'education',
+    'shopping',
+    'bills',
+    'investment',
+    'salary',
+    'rent',
+    'parents',
+    'other',
+  ]),
   type: z.enum(['income', 'spend', 'investment']),
   description: z.string().optional(),
   date: z.string(),
@@ -13,7 +27,23 @@ const createCashflowSchema = z.object({
 
 const updateCashflowSchema = z.object({
   amount: z.number().positive().optional(),
-  category: z.enum(['food', 'transport', 'utilities', 'entertainment', 'healthcare', 'education', 'shopping', 'bills', 'investment', 'salary', 'rent', 'parents', 'other']).optional(),
+  category: z
+    .enum([
+      'food',
+      'transport',
+      'utilities',
+      'entertainment',
+      'healthcare',
+      'education',
+      'shopping',
+      'bills',
+      'investment',
+      'salary',
+      'rent',
+      'parents',
+      'other',
+    ])
+    .optional(),
   type: z.enum(['income', 'spend', 'investment']).optional(),
   description: z.string().optional().nullable(),
   date: z.string().optional(),
@@ -24,9 +54,9 @@ export async function getAllCashflows(request: FastifyRequest, reply: FastifyRep
   try {
     const userId = (request.user as any).userId;
     const { month, year, type, category } = request.query as any;
-    
-    let whereClause: any = { userId };
-    
+
+    const whereClause: any = { userId };
+
     // Filter by month and year if provided
     if (month && year) {
       const startDate = new Date(year, month - 1, 1);
@@ -43,22 +73,22 @@ export async function getAllCashflows(request: FastifyRequest, reply: FastifyRep
         lte: endDate,
       };
     }
-    
+
     // Filter by type
     if (type) {
       whereClause.type = type;
     }
-    
+
     // Filter by category
     if (category) {
       whereClause.category = category;
     }
-    
+
     const cashflows = await prisma.cashflow.findMany({
       where: whereClause,
       orderBy: { date: 'desc' },
     });
-    
+
     return reply.send({ cashflows });
   } catch (error) {
     console.error('Get cashflows error:', error);
@@ -70,49 +100,52 @@ export async function getCashflowSummary(request: FastifyRequest, reply: Fastify
   try {
     const userId = (request.user as any).userId;
     const { month, year } = request.query as any;
-    
-    let whereClause: any = { userId };
-    
+
+    const whereClause: any = { userId };
+
     // Default to current month if not provided
     const currentDate = new Date();
     const targetMonth = month ? parseInt(month) : currentDate.getMonth() + 1;
     const targetYear = year ? parseInt(year) : currentDate.getFullYear();
-    
+
     const startDate = new Date(targetYear, targetMonth - 1, 1);
     const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59);
-    
+
     whereClause.date = {
       gte: startDate,
       lte: endDate,
     };
-    
+
     const cashflows = await prisma.cashflow.findMany({
       where: whereClause,
     });
-    
+
     // Calculate totals by category
     const categoryTotals: Record<string, number> = {};
     let totalSpend = 0;
     let totalIncome = 0;
     let totalInvestment = 0;
-    
-    cashflows.forEach((cashflow) => {
+
+    cashflows.forEach(cashflow => {
       if (cashflow.type === 'spend') {
         totalSpend += cashflow.amount;
-        categoryTotals[cashflow.category] = (categoryTotals[cashflow.category] || 0) + cashflow.amount;
+        categoryTotals[cashflow.category] =
+          (categoryTotals[cashflow.category] || 0) + cashflow.amount;
       } else if (cashflow.type === 'income') {
         totalIncome += cashflow.amount;
       } else if (cashflow.type === 'investment') {
         totalInvestment += cashflow.amount;
       }
     });
-    
-    const categoryBreakdown = Object.entries(categoryTotals).map(([category, amount]) => ({
-      category,
-      amount,
-      percentage: totalSpend > 0 ? (amount / totalSpend) * 100 : 0,
-    })).sort((a, b) => b.amount - a.amount);
-    
+
+    const categoryBreakdown = Object.entries(categoryTotals)
+      .map(([category, amount]) => ({
+        category,
+        amount,
+        percentage: totalSpend > 0 ? (amount / totalSpend) * 100 : 0,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+
     return reply.send({
       month: targetMonth,
       year: targetYear,
@@ -133,15 +166,15 @@ export async function getMonthlyTrend(request: FastifyRequest, reply: FastifyRep
   try {
     const userId = (request.user as any).userId;
     const { year } = request.query as any;
-    
+
     const targetYear = year ? parseInt(year) : new Date().getFullYear();
-    
+
     const monthlyData = [];
-    
+
     for (let month = 1; month <= 12; month++) {
       const startDate = new Date(targetYear, month - 1, 1);
       const endDate = new Date(targetYear, month, 0, 23, 59, 59);
-      
+
       const cashflows = await prisma.cashflow.findMany({
         where: {
           userId,
@@ -151,12 +184,12 @@ export async function getMonthlyTrend(request: FastifyRequest, reply: FastifyRep
           },
         },
       });
-      
+
       let totalSpend = 0;
       let totalIncome = 0;
       let totalInvestment = 0;
-      
-      cashflows.forEach((cashflow) => {
+
+      cashflows.forEach(cashflow => {
         if (cashflow.type === 'spend') {
           totalSpend += cashflow.amount;
         } else if (cashflow.type === 'income') {
@@ -165,7 +198,7 @@ export async function getMonthlyTrend(request: FastifyRequest, reply: FastifyRep
           totalInvestment += cashflow.amount;
         }
       });
-      
+
       monthlyData.push({
         month,
         monthName: new Date(targetYear, month - 1).toLocaleString('default', { month: 'short' }),
@@ -175,7 +208,7 @@ export async function getMonthlyTrend(request: FastifyRequest, reply: FastifyRep
         balance: totalIncome - totalSpend - totalInvestment,
       });
     }
-    
+
     return reply.send({ year: targetYear, monthlyData });
   } catch (error) {
     console.error('Get monthly trend error:', error);
@@ -214,7 +247,7 @@ export async function updateCashflow(request: FastifyRequest, reply: FastifyRepl
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateCashflowSchema.parse(request.body);
-    
+
     // Verify cashflow exists and belongs to user
     const existingCashflow = await prisma.cashflow.findFirst({
       where: {
@@ -222,23 +255,23 @@ export async function updateCashflow(request: FastifyRequest, reply: FastifyRepl
         userId,
       },
     });
-    
+
     if (!existingCashflow) {
       return reply.code(404).send({ error: 'Cashflow not found' });
     }
-    
+
     const updateData: any = {};
     if (data.amount !== undefined) updateData.amount = data.amount;
     if (data.category !== undefined) updateData.category = data.category;
     if (data.type !== undefined) updateData.type = data.type;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.date !== undefined) updateData.date = new Date(data.date);
-    
+
     const cashflow = await prisma.cashflow.update({
       where: { id },
       data: updateData,
     });
-    
+
     return reply.send({ cashflow });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -253,7 +286,7 @@ export async function deleteCashflow(request: FastifyRequest, reply: FastifyRepl
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     // Verify cashflow exists and belongs to user
     const existingCashflow = await prisma.cashflow.findFirst({
       where: {
@@ -261,15 +294,15 @@ export async function deleteCashflow(request: FastifyRequest, reply: FastifyRepl
         userId,
       },
     });
-    
+
     if (!existingCashflow) {
       return reply.code(404).send({ error: 'Cashflow not found' });
     }
-    
+
     await prisma.cashflow.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Cashflow deleted successfully' });
   } catch (error) {
     console.error('Delete cashflow error:', error);

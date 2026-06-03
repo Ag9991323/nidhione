@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Box, Tabs, Tab, Typography } from '@mui/material';
 import TrackRecordChart from './TrackRecordChart';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import ProjectionChart from './ProjectionChart';
 
 const TrackRecordPage: React.FC = () => {
-  // Replace with your actual user selector logic
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
-
-  if (!userId) return <div>Please log in to view your track record.</div>;
+  const [tab, setTab] = useState(0);
 
   return (
-    <div>
-      <TrackRecordChart userId={userId} />
-    </div>
+    <Box>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Track Record
+      </Typography>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
+        <Tab label="History" />
+        <Tab label="Projection" />
+      </Tabs>
+      {tab === 0 && <TrackRecordChart />}
+      {tab === 1 && <ProjectionChart />}
+    </Box>
   );
 };
 

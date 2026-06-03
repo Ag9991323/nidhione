@@ -55,20 +55,26 @@ export const recurringDepositsAPI = createApi({
     },
   }),
   tagTypes: ['RecurringDeposit'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getRecurringDeposits: builder.query<{ recurringDeposits: RecurringDeposit[] }, void>({
       query: () => '/',
       providesTags: ['RecurringDeposit'],
     }),
-    createRecurringDeposit: builder.mutation<{ recurringDeposit: RecurringDeposit }, CreateRecurringDepositRequest>({
-      query: (data) => ({
+    createRecurringDeposit: builder.mutation<
+      { recurringDeposit: RecurringDeposit },
+      CreateRecurringDepositRequest
+    >({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['RecurringDeposit'],
     }),
-    updateRecurringDeposit: builder.mutation<{ recurringDeposit: RecurringDeposit }, { id: string; data: UpdateRecurringDepositRequest }>({
+    updateRecurringDeposit: builder.mutation<
+      { recurringDeposit: RecurringDeposit },
+      { id: string; data: UpdateRecurringDepositRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -77,7 +83,7 @@ export const recurringDepositsAPI = createApi({
       invalidatesTags: ['RecurringDeposit'],
     }),
     deleteRecurringDeposit: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
