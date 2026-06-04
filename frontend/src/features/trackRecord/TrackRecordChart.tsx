@@ -17,8 +17,8 @@ interface Props {
   userId: string;
 }
 
-const TrackRecordChart: React.FC<Props> = ({ userId }) => {
-  const { data, isLoading, error } = useGetTrackRecordsQuery(userId);
+const TrackRecordChart: React.FC<Props> = () => {
+  const { data, isLoading, error } = useGetTrackRecordsQuery();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading track records.</div>;
