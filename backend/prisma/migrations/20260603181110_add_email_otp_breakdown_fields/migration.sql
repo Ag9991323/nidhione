@@ -54,8 +54,6 @@ CREATE TABLE "email_otps" (
 -- CreateIndex
 CREATE UNIQUE INDEX "daily_gold_prices_source_key" ON "daily_gold_prices"("source");
 
--- CreateIndex
-CREATE UNIQUE INDEX "daily_mutual_fund_navs_schemeCode_key" ON "daily_mutual_fund_navs"("schemeCode");
 
--- CreateIndex
-CREATE UNIQUE INDEX "daily_stock_prices_symbol_key" ON "daily_stock_prices"("symbol");
+-- REPLACE with:
+CREATE UNIQUE INDEX "daily_mutual_fund_navs_schemeCode_key" ON "daily_mutual_fund_navs"("schemeCode");
