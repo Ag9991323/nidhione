@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '@/app/store';
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export interface TrackRecord {
   id: string;
@@ -29,7 +30,7 @@ export interface TrackRecord {
 export const trackRecordApi = createApi({
   reducerPath: 'trackRecordApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/track-records',
+    baseUrl: `${baseUrl}/track-records`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) headers.set('authorization', `Bearer ${token}`);
