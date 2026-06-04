@@ -27,7 +27,7 @@ const updateBorrowedMoneySchema = z.object({
 export async function getAllBorrowedMoney(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const borrowedMoney = await prisma.borrowedMoney.findMany({
       where: { userId },
       orderBy: { borrowDate: 'desc' },
@@ -87,11 +87,15 @@ export async function updateBorrowedMoney(request: FastifyRequest, reply: Fastif
     const updateData: any = {};
     if (validatedData.lenderName !== undefined) updateData.lenderName = validatedData.lenderName;
     if (validatedData.amount !== undefined) updateData.amount = validatedData.amount;
-    if (validatedData.interestRate !== undefined) updateData.interestRate = validatedData.interestRate;
-    if (validatedData.borrowDate !== undefined) updateData.borrowDate = new Date(validatedData.borrowDate);
-    if (validatedData.returnDate !== undefined) updateData.returnDate = validatedData.returnDate ? new Date(validatedData.returnDate) : null;
+    if (validatedData.interestRate !== undefined)
+      updateData.interestRate = validatedData.interestRate;
+    if (validatedData.borrowDate !== undefined)
+      updateData.borrowDate = new Date(validatedData.borrowDate);
+    if (validatedData.returnDate !== undefined)
+      updateData.returnDate = validatedData.returnDate ? new Date(validatedData.returnDate) : null;
     if (validatedData.status !== undefined) updateData.status = validatedData.status;
-    if (validatedData.amountReturned !== undefined) updateData.amountReturned = validatedData.amountReturned;
+    if (validatedData.amountReturned !== undefined)
+      updateData.amountReturned = validatedData.amountReturned;
     if (validatedData.notes !== undefined) updateData.notes = validatedData.notes;
 
     const borrowedMoney = await prisma.borrowedMoney.update({

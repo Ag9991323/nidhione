@@ -12,6 +12,10 @@ export const config = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
     redirectUri: process.env.GOOGLE_REDIRECT_URI || '',
   },
+  smtp: {
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+  },
   cron: {
     priceUpdate: process.env.PRICE_UPDATE_CRON || '0 */6 * * *',
     sipExecution: process.env.SIP_EXECUTION_CRON || '0 9 * * *',

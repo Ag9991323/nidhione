@@ -53,13 +53,13 @@ export const licAPI = createApi({
     },
   }),
   tagTypes: ['LIC'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getLIC: builder.query<LIC[], void>({
       query: () => '/lic',
       providesTags: ['LIC'],
     }),
     createLIC: builder.mutation<LIC, CreateLICRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/lic',
         method: 'POST',
         body: data,
@@ -75,7 +75,7 @@ export const licAPI = createApi({
       invalidatesTags: ['LIC'],
     }),
     deleteLIC: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/lic/${id}`,
         method: 'DELETE',
       }),
@@ -84,9 +84,5 @@ export const licAPI = createApi({
   }),
 });
 
-export const {
-  useGetLICQuery,
-  useCreateLICMutation,
-  useUpdateLICMutation,
-  useDeleteLICMutation,
-} = licAPI;
+export const { useGetLICQuery, useCreateLICMutation, useUpdateLICMutation, useDeleteLICMutation } =
+  licAPI;

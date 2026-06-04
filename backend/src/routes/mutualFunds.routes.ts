@@ -1,5 +1,11 @@
 import { FastifyInstance } from 'fastify';
-import { getAllMutualFunds, createMutualFund, updateMutualFund, deleteMutualFund, searchMF } from '../controllers/mutualFunds.controller';
+import {
+  getAllMutualFunds,
+  createMutualFund,
+  updateMutualFund,
+  deleteMutualFund,
+  searchMF,
+} from '../controllers/mutualFunds.controller';
 
 export async function mutualFundsRoutes(fastify: FastifyInstance) {
   fastify.get('/', { onRequest: [fastify.authenticate] }, getAllMutualFunds);

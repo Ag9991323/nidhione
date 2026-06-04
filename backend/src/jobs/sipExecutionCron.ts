@@ -6,10 +6,10 @@ import { config } from '../config';
 
 export function startSIPExecutionCron() {
   console.log('Starting SIP execution cron job...');
-  
+
   cron.schedule(config.cron.sipExecution, async () => {
     console.log('Running SIP execution job...');
-    
+
     try {
       await executePendingSIPs();
       console.log('SIP execution completed successfully');
@@ -23,7 +23,7 @@ async function executePendingSIPs() {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const pendingSIPs = await prisma.sIP.findMany({
       where: {
         status: 'active',
@@ -35,30 +35,30 @@ async function executePendingSIPs() {
         mutualFund: true,
       },
     });
-    
+
     console.log(`Found ${pendingSIPs.length} SIPs to execute`);
-    
+
     for (const sip of pendingSIPs) {
       try {
         // Fetch current NAV
         const currentNAV = await getNAVBySchemeCode(sip.mutualFund.schemeCode);
-        
+
         if (!currentNAV) {
           console.error(`Could not fetch NAV for SIP ${sip.id}`);
           continue;
         }
-        
+
         // Calculate new units
         const newUnits = sip.amount / currentNAV;
         const totalUnits = sip.mutualFund.units + newUnits;
-        
+
         // Calculate new average NAV
         const totalInvested = sip.mutualFund.investedAmount + sip.amount;
         const newAverageNAV = totalInvested / totalUnits;
-        
+
         const currentValue = totalUnits * currentNAV;
         const { returns, returnsPercentage } = calculateSimpleReturns(totalInvested, currentValue);
-        
+
         // Update mutual fund
         await prisma.mutualFund.update({
           where: { id: sip.mfId },
@@ -73,7 +73,7 @@ async function executePendingSIPs() {
             lastUpdated: new Date(),
           },
         });
-        
+
         // Calculate next execution date
         const nextDate = new Date(sip.nextExecutionDate);
         if (sip.frequency === 'monthly') {
@@ -81,7 +81,7 @@ async function executePendingSIPs() {
         } else if (sip.frequency === 'quarterly') {
           nextDate.setMonth(nextDate.getMonth() + 3);
         }
-        
+
         // Update SIP
         await prisma.sIP.update({
           where: { id: sip.id },
@@ -89,8 +89,10 @@ async function executePendingSIPs() {
             nextExecutionDate: nextDate,
           },
         });
-        
-        console.log(`Executed SIP ${sip.id}: Added ${newUnits.toFixed(4)} units at NAV ${currentNAV}`);
+
+        console.log(
+          `Executed SIP ${sip.id}: Added ${newUnits.toFixed(4)} units at NAV ${currentNAV}`,
+        );
       } catch (error) {
         console.error(`Error executing SIP ${sip.id}:`, error);
       }

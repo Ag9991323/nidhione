@@ -63,7 +63,7 @@ export const dashboardAPI = createApi({
     },
   }),
   tagTypes: ['Dashboard'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getDashboard: builder.query<DashboardData, void>({
       query: () => '/',
       providesTags: ['Dashboard'],
@@ -79,8 +79,5 @@ export const dashboardAPI = createApi({
   }),
 });
 
-export const {
-  useGetDashboardQuery,
-  useGetAssetAllocationQuery,
-  useGetPerformanceQuery,
-} = dashboardAPI;
+export const { useGetDashboardQuery, useGetAssetAllocationQuery, useGetPerformanceQuery } =
+  dashboardAPI;

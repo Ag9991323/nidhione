@@ -1,35 +1,33 @@
 import prisma from '../config/database';
 import { getStockPrice } from './yahooFinance';
 
-/**
- * Get today's date at midnight (for DB lookup)
- */
-function getTodayDate(): Date {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
+function isFreshToday(updatedAt: Date): boolean {
+  return updatedAt.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
 }
 
-/**
- * Fetch daily stock price from DB or API (caching, 1 call per stock per day)
- */
-export async function getDailyStockPrice(symbol: string): Promise<number | null> {
-  const today = getTodayDate();
-  // 1. Check if price exists in DB for today
-  const existing = await prisma.dailyStockPrice.findUnique({
-    where: { symbol_date: { symbol, date: today } },
-  });
-  if (existing) return existing.price;
+export async function warmStockPriceCache(prices: Map<string, number>): Promise<void> {
+  await Promise.all(
+    Array.from(prices.entries()).map(([symbol, price]) =>
+      prisma.dailyStockPrice.upsert({
+        where: { symbol },
+        update: { price, source: 'api' },
+        create: { symbol, price, source: 'api' },
+      }),
+    ),
+  );
+}
 
-  // 2. Fetch from API
+export async function getDailyStockPrice(symbol: string): Promise<number | null> {
+  const existing = await prisma.dailyStockPrice.findUnique({ where: { symbol } });
+  if (existing && isFreshToday(existing.updatedAt)) return existing.price;
+
   const price = await getStockPrice(symbol);
   if (price == null) return null;
 
-  // 3. Store in DB using upsert to avoid race condition
   await prisma.dailyStockPrice.upsert({
-    where: { symbol_date: { symbol, date: today } },
-    update: { price, source: 'api', updatedAt: new Date() },
-    create: { symbol, date: today, price, source: 'api' },
+    where: { symbol },
+    update: { price, source: 'api' },
+    create: { symbol, price, source: 'api' },
   });
   return price;
 }

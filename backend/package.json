@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "description": "NidhiOne Wealth Management Backend API",
   "main": "dist/server.js",
- "scripts": {
-  "dev": "tsx watch src/server.ts",
-  "build": "npx prisma generate && tsc",
-  "start": "bash start.sh",
-  "prisma:generate": "prisma generate",
-  "prisma:migrate": "prisma migrate dev",
-  "prisma:studio": "prisma studio"
-},
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "npx prisma generate && tsc",
+    "start": "bash start.sh",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "lint": "eslint src --ext ts",
+    "format": "prettier --write \"src/**/*.ts\" \"prisma/**/*.prisma\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"prisma/**/*.prisma\""
+  },
   "keywords": [
     "wealth",
     "management",
@@ -28,6 +31,7 @@
     "fastify": "^4.25.2",
     "google-auth-library": "^9.13.0",
     "node-cron": "^3.0.3",
+    "nodemailer": "^8.0.10",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -36,6 +40,10 @@
     "@types/node": "^20.10.6",
     "@types/node-cron": "^3.0.11",
     "@types/react-chartjs-2": "^2.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.8.3",
     "prisma": "^5.22.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"

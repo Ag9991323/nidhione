@@ -59,13 +59,13 @@ export const stocksAPI = createApi({
     },
   }),
   tagTypes: ['Stock'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getStocks: builder.query<{ stocks: Stock[] }, void>({
       query: () => '/',
       providesTags: ['Stock'],
     }),
     createStock: builder.mutation<{ stock: Stock }, CreateStockRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
@@ -81,14 +81,14 @@ export const stocksAPI = createApi({
       invalidatesTags: ['Stock'],
     }),
     deleteStock: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Stock'],
     }),
     searchStock: builder.query<{ results: StockSearchResult[] }, string>({
-      query: (query) => `/search?query=${query}`,
+      query: query => `/search?query=${query}`,
     }),
   }),
 });

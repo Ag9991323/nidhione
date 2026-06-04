@@ -18,7 +18,11 @@ import {
 } from '@mui/material';
 import { Edit, Delete, ArrowBack } from '@mui/icons-material';
 import { DataTable } from '@/shared/components';
-import { useGetLiabilitiesQuery, useUpdateLiabilityMutation, useDeleteLiabilityMutation } from './liabilitiesAPI';
+import {
+  useGetLiabilitiesQuery,
+  useUpdateLiabilityMutation,
+  useDeleteLiabilityMutation,
+} from './liabilitiesAPI';
 import { formatCurrency } from '@/utils/formatters';
 
 interface LiabilityFormData {
@@ -48,7 +52,7 @@ export default function LiabilitiesList() {
   const { data: allLiabilities = [], isLoading } = useGetLiabilitiesQuery();
   const [updateLiability] = useUpdateLiabilityMutation();
   const [deleteLiability] = useDeleteLiabilityMutation();
-  
+
   // Filter liabilities by type
   const liabilities = type ? allLiabilities.filter(l => l.type === type) : allLiabilities;
   const typeLabel = liabilityTypes.find(t => t.value === type)?.label || 'All Liabilities';
@@ -113,8 +117,14 @@ export default function LiabilitiesList() {
     setIsSubmitting(true);
 
     try {
-      if (!formData.name || !formData.type || !formData.principalAmount || 
-          !formData.currentBalance || !formData.interestRate || !formData.startDate) {
+      if (
+        !formData.name ||
+        !formData.type ||
+        !formData.principalAmount ||
+        !formData.currentBalance ||
+        !formData.interestRate ||
+        !formData.startDate
+      ) {
         setError('Please fill all required fields');
         setIsSubmitting(false);
         return;
@@ -164,9 +174,9 @@ export default function LiabilitiesList() {
     <Box>
       <Box sx={{ mb: 3 }}>
         <Breadcrumbs sx={{ mb: 2 }}>
-          <Link 
-            component="button" 
-            variant="body1" 
+          <Link
+            component="button"
+            variant="body1"
             onClick={() => navigate('/liabilities')}
             sx={{ cursor: 'pointer', textDecoration: 'none' }}
           >
@@ -184,15 +194,23 @@ export default function LiabilitiesList() {
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Total Outstanding</Typography>
-          <Typography variant="h6" color="error.main">{formatCurrency(totalBalance)}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Outstanding
+          </Typography>
+          <Typography variant="h6" color="error.main">
+            {formatCurrency(totalBalance)}
+          </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Total Principal</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Principal
+          </Typography>
           <Typography variant="h6">{formatCurrency(totalPrincipal)}</Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">Total Monthly EMI</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Monthly EMI
+          </Typography>
           <Typography variant="h6">{formatCurrency(totalEMI)}</Typography>
         </Paper>
       </Box>
@@ -200,25 +218,35 @@ export default function LiabilitiesList() {
       <DataTable
         columns={[
           { id: 'name', label: 'Name' },
-          { 
-            id: 'type', 
-            label: 'Type', 
-            format: (v) => liabilityTypes.find(t => t.value === v)?.label
+          {
+            id: 'type',
+            label: 'Type',
+            format: v => liabilityTypes.find(t => t.value === v)?.label,
           },
-          { id: 'principalAmount', label: 'Principal', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'currentBalance', label: 'Outstanding', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'interestRate', label: 'Interest Rate', align: 'right', format: (v) => `${v}%` },
-          { 
-            id: 'emiAmount', 
-            label: 'EMI', 
-            align: 'right', 
-            format: (v) => v ? formatCurrency(v) : '-'
+          {
+            id: 'principalAmount',
+            label: 'Principal',
+            align: 'right',
+            format: v => formatCurrency(v),
           },
-          { id: 'lender', label: 'Lender', format: (v) => v || '-' },
-          { 
-            id: 'endDate', 
-            label: 'End Date', 
-            format: (v) => v ? new Date(v).toLocaleDateString() : '-'
+          {
+            id: 'currentBalance',
+            label: 'Outstanding',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
+          { id: 'interestRate', label: 'Interest Rate', align: 'right', format: v => `${v}%` },
+          {
+            id: 'emiAmount',
+            label: 'EMI',
+            align: 'right',
+            format: v => (v ? formatCurrency(v) : '-'),
+          },
+          { id: 'lender', label: 'Lender', format: v => v || '-' },
+          {
+            id: 'endDate',
+            label: 'End Date',
+            format: v => (v ? new Date(v).toLocaleDateString() : '-'),
           },
           {
             id: 'actions',
@@ -244,12 +272,16 @@ export default function LiabilitiesList() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Edit Liability' : 'Add Liability'}</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             label="Name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
             margin="normal"
             required
           />
@@ -258,11 +290,11 @@ export default function LiabilitiesList() {
             select
             label="Type"
             value={formData.type}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+            onChange={e => setFormData({ ...formData, type: e.target.value as any })}
             margin="normal"
             required
           >
-            {liabilityTypes.map((type) => (
+            {liabilityTypes.map(type => (
               <MenuItem key={type.value} value={type.value}>
                 {type.label}
               </MenuItem>
@@ -273,7 +305,7 @@ export default function LiabilitiesList() {
             label="Principal Amount"
             type="number"
             value={formData.principalAmount}
-            onChange={(e) => setFormData({ ...formData, principalAmount: e.target.value })}
+            onChange={e => setFormData({ ...formData, principalAmount: e.target.value })}
             margin="normal"
             required
           />
@@ -282,7 +314,7 @@ export default function LiabilitiesList() {
             label="Current Outstanding Balance"
             type="number"
             value={formData.currentBalance}
-            onChange={(e) => setFormData({ ...formData, currentBalance: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentBalance: e.target.value })}
             margin="normal"
             required
           />
@@ -291,7 +323,7 @@ export default function LiabilitiesList() {
             label="Interest Rate (%)"
             type="number"
             value={formData.interestRate}
-            onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+            onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
             margin="normal"
             required
           />
@@ -300,7 +332,7 @@ export default function LiabilitiesList() {
             label="Monthly EMI"
             type="number"
             value={formData.emiAmount}
-            onChange={(e) => setFormData({ ...formData, emiAmount: e.target.value })}
+            onChange={e => setFormData({ ...formData, emiAmount: e.target.value })}
             margin="normal"
             helperText="Optional"
           />
@@ -308,7 +340,7 @@ export default function LiabilitiesList() {
             fullWidth
             label="Lender"
             value={formData.lender}
-            onChange={(e) => setFormData({ ...formData, lender: e.target.value })}
+            onChange={e => setFormData({ ...formData, lender: e.target.value })}
             margin="normal"
             helperText="Optional"
           />
@@ -317,7 +349,7 @@ export default function LiabilitiesList() {
             label="Start Date"
             type="date"
             value={formData.startDate}
-            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, startDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             required
@@ -327,7 +359,7 @@ export default function LiabilitiesList() {
             label="End Date"
             type="date"
             value={formData.endDate}
-            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, endDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             helperText="Optional"

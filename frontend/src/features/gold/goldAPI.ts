@@ -10,7 +10,7 @@ export interface GoldAsset {
   userId: string;
   type: 'physical' | 'digital' | 'etf';
   name?: string;
-  
+
   // For physical & digital
   quantityGrams?: number;
   purity?: '24K' | '22K' | '18K' | '14K';
@@ -18,25 +18,25 @@ export interface GoldAsset {
   currentPricePerGram?: number;
   makingCharges?: number;
   storageLocation?: string;
-  
+
   // For ETF
   schemeName?: string;
   schemeCode?: string;
   units?: number;
   averageNav?: number;
   currentNav?: number;
-  
+
   investedAmount: number;
   currentValue: number;
   returns: number;
   returnsPercentage: number;
-  
+
   goalId?: string;
   goal?: {
     id: string;
     name: string;
   };
-  
+
   lastUpdated: string;
   createdAt: string;
 }
@@ -82,7 +82,7 @@ export const goldAPI = createApi({
   reducerPath: 'goldAPI',
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/gold`,
-    prepareHeaders: (headers) => {
+    prepareHeaders: headers => {
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
@@ -91,25 +91,25 @@ export const goldAPI = createApi({
     },
   }),
   tagTypes: ['Gold'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getAllGold: builder.query<{ goldAssets: GoldAsset[] }, void>({
       query: () => '/',
       providesTags: ['Gold'],
     }),
-    
+
     getCurrentGoldPrices: builder.query<GoldPrices, void>({
       query: () => '/prices',
     }),
-    
+
     createGold: builder.mutation<{ gold: GoldAsset }, CreateGoldRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Gold'],
     }),
-    
+
     updateGold: builder.mutation<{ gold: GoldAsset }, { id: string; data: UpdateGoldRequest }>({
       query: ({ id, data }) => ({
         url: `/${id}`,
@@ -118,9 +118,9 @@ export const goldAPI = createApi({
       }),
       invalidatesTags: ['Gold'],
     }),
-    
+
     deleteGold: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

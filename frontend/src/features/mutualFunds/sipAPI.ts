@@ -54,17 +54,17 @@ export const sipAPI = createApi({
     },
   }),
   tagTypes: ['SIP'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getSIPs: builder.query<{ sips: SIP[] }, void>({
       query: () => '/',
       providesTags: ['SIP'],
     }),
     getSIPsByMutualFund: builder.query<{ sips: SIP[] }, string>({
-      query: (mfId) => `/mutual-fund/${mfId}`,
+      query: mfId => `/mutual-fund/${mfId}`,
       providesTags: ['SIP'],
     }),
     createSIP: builder.mutation<{ sip: SIP }, CreateSIPRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
@@ -80,7 +80,7 @@ export const sipAPI = createApi({
       invalidatesTags: ['SIP'],
     }),
     deleteSIP: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

@@ -142,9 +142,9 @@ export default function GoldList() {
   };
 
   const goldAssets = goldData?.goldAssets || [];
-  const physicalGold = goldAssets.filter((g) => g.type === 'physical');
-  const digitalGold = goldAssets.filter((g) => g.type === 'digital');
-  const goldETFs = goldAssets.filter((g) => g.type === 'etf');
+  const physicalGold = goldAssets.filter(g => g.type === 'physical');
+  const digitalGold = goldAssets.filter(g => g.type === 'digital');
+  const goldETFs = goldAssets.filter(g => g.type === 'etf');
 
   const totalInvested = goldAssets.reduce((sum, g) => sum + g.investedAmount, 0);
   const totalCurrent = goldAssets.reduce((sum, g) => sum + g.currentValue, 0);
@@ -155,7 +155,8 @@ export default function GoldList() {
     <Card
       key={gold.id}
       sx={{
-        background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%)',
+        background:
+          'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255, 215, 0, 0.2)',
         transition: 'all 0.3s ease',
@@ -166,7 +167,9 @@ export default function GoldList() {
       }}
     >
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}
+        >
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <Typography variant="h3" sx={{ fontSize: '1.5rem' }}>
@@ -307,7 +310,11 @@ export default function GoldList() {
             <Typography variant="caption" color="text.secondary">
               Returns
             </Typography>
-            <Typography variant="body2" fontWeight={600} color={gold.returns >= 0 ? 'success.main' : 'error.main'}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color={gold.returns >= 0 ? 'success.main' : 'error.main'}
+            >
               {formatCurrency(gold.returns)} ({gold.returnsPercentage.toFixed(2)}%)
             </Typography>
           </Grid>
@@ -362,7 +369,12 @@ export default function GoldList() {
       {/* Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)' }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)',
+            }}
+          >
             <CardContent>
               <Typography variant="caption" color="text.secondary">
                 Total Invested
@@ -372,7 +384,12 @@ export default function GoldList() {
           </Card>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)' }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)',
+            }}
+          >
             <CardContent>
               <Typography variant="caption" color="text.secondary">
                 Current Value
@@ -382,7 +399,12 @@ export default function GoldList() {
           </Card>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)' }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)',
+            }}
+          >
             <CardContent>
               <Typography variant="caption" color="text.secondary">
                 Total Returns
@@ -394,12 +416,20 @@ export default function GoldList() {
           </Card>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)' }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%)',
+            }}
+          >
             <CardContent>
               <Typography variant="caption" color="text.secondary">
                 Returns %
               </Typography>
-              <Typography variant="h6" color={totalReturnsPercentage >= 0 ? 'success.main' : 'error.main'}>
+              <Typography
+                variant="h6"
+                color={totalReturnsPercentage >= 0 ? 'success.main' : 'error.main'}
+              >
                 {totalReturnsPercentage.toFixed(2)}%
               </Typography>
             </CardContent>
@@ -440,33 +470,37 @@ export default function GoldList() {
       <Grid container spacing={2}>
         {selectedTab === 0 &&
           (physicalGold.length > 0 ? (
-            physicalGold.map((gold) => (
+            physicalGold.map(gold => (
               <Grid item xs={12} md={6} lg={4} key={gold.id}>
                 {renderGoldCard(gold)}
               </Grid>
             ))
           ) : (
             <Grid item xs={12}>
-              <Alert severity="info">No physical gold assets found. Add your first physical gold investment!</Alert>
+              <Alert severity="info">
+                No physical gold assets found. Add your first physical gold investment!
+              </Alert>
             </Grid>
           ))}
 
         {selectedTab === 1 &&
           (digitalGold.length > 0 ? (
-            digitalGold.map((gold) => (
+            digitalGold.map(gold => (
               <Grid item xs={12} md={6} lg={4} key={gold.id}>
                 {renderGoldCard(gold)}
               </Grid>
             ))
           ) : (
             <Grid item xs={12}>
-              <Alert severity="info">No digital gold assets found. Add your digital gold holdings!</Alert>
+              <Alert severity="info">
+                No digital gold assets found. Add your digital gold holdings!
+              </Alert>
             </Grid>
           ))}
 
         {selectedTab === 2 &&
           (goldETFs.length > 0 ? (
-            goldETFs.map((gold) => (
+            goldETFs.map(gold => (
               <Grid item xs={12} md={6} lg={4} key={gold.id}>
                 {renderGoldCard(gold)}
               </Grid>
@@ -489,7 +523,7 @@ export default function GoldList() {
                 fullWidth
                 label="Gold Type"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                onChange={e => setFormData({ ...formData, type: e.target.value as any })}
                 disabled={!!editingGold}
               >
                 <MenuItem value="physical">💍 Physical Gold</MenuItem>
@@ -503,13 +537,13 @@ export default function GoldList() {
                 fullWidth
                 label="Name (optional)"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
                 placeholder={`e.g., ${
                   formData.type === 'physical'
                     ? 'Gold Necklace'
                     : formData.type === 'digital'
-                    ? 'Paytm Gold'
-                    : 'Gold BeES'
+                      ? 'Paytm Gold'
+                      : 'Gold BeES'
                 }`}
               />
             </Grid>
@@ -522,7 +556,9 @@ export default function GoldList() {
                     type="number"
                     label="Quantity (grams)"
                     value={formData.quantityGrams || ''}
-                    onChange={(e) => setFormData({ ...formData, quantityGrams: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setFormData({ ...formData, quantityGrams: parseFloat(e.target.value) })
+                    }
                     InputProps={{
                       endAdornment: <InputAdornment position="end">g</InputAdornment>,
                     }}
@@ -535,9 +571,9 @@ export default function GoldList() {
                     fullWidth
                     label="Purity"
                     value={formData.purity || ''}
-                    onChange={(e) => setFormData({ ...formData, purity: e.target.value as any })}
+                    onChange={e => setFormData({ ...formData, purity: e.target.value as any })}
                   >
-                    {purityOptions.map((purity) => (
+                    {purityOptions.map(purity => (
                       <MenuItem key={purity} value={purity}>
                         {purity}
                       </MenuItem>
@@ -551,7 +587,9 @@ export default function GoldList() {
                     type="number"
                     label="Average Price per Gram"
                     value={formData.averagePricePerGram || ''}
-                    onChange={(e) => setFormData({ ...formData, averagePricePerGram: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setFormData({ ...formData, averagePricePerGram: parseFloat(e.target.value) })
+                    }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                     }}
@@ -565,7 +603,9 @@ export default function GoldList() {
                       type="number"
                       label="Making Charges"
                       value={formData.makingCharges || ''}
-                      onChange={(e) => setFormData({ ...formData, makingCharges: parseFloat(e.target.value) })}
+                      onChange={e =>
+                        setFormData({ ...formData, makingCharges: parseFloat(e.target.value) })
+                      }
                       InputProps={{
                         startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                       }}
@@ -578,7 +618,7 @@ export default function GoldList() {
                     fullWidth
                     label="Storage Location (optional)"
                     value={formData.storageLocation || ''}
-                    onChange={(e) => setFormData({ ...formData, storageLocation: e.target.value })}
+                    onChange={e => setFormData({ ...formData, storageLocation: e.target.value })}
                     placeholder={formData.type === 'physical' ? 'e.g., Home Locker' : 'e.g., Paytm'}
                   />
                 </Grid>
@@ -592,7 +632,7 @@ export default function GoldList() {
                     fullWidth
                     label="Scheme Name"
                     value={formData.schemeName || ''}
-                    onChange={(e) => setFormData({ ...formData, schemeName: e.target.value })}
+                    onChange={e => setFormData({ ...formData, schemeName: e.target.value })}
                     placeholder="e.g., Nippon India ETF Gold BeES"
                   />
                 </Grid>
@@ -602,7 +642,7 @@ export default function GoldList() {
                     fullWidth
                     label="Scheme Code / Symbol"
                     value={formData.schemeCode || ''}
-                    onChange={(e) => setFormData({ ...formData, schemeCode: e.target.value })}
+                    onChange={e => setFormData({ ...formData, schemeCode: e.target.value })}
                     placeholder="e.g., GOLDBEES.NS"
                     helperText="Enter Yahoo Finance symbol for auto NAV updates"
                   />
@@ -614,7 +654,7 @@ export default function GoldList() {
                     type="number"
                     label="Units"
                     value={formData.units || ''}
-                    onChange={(e) => setFormData({ ...formData, units: parseFloat(e.target.value) })}
+                    onChange={e => setFormData({ ...formData, units: parseFloat(e.target.value) })}
                   />
                 </Grid>
 
@@ -624,7 +664,9 @@ export default function GoldList() {
                     type="number"
                     label="Average NAV"
                     value={formData.averageNav || ''}
-                    onChange={(e) => setFormData({ ...formData, averageNav: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setFormData({ ...formData, averageNav: parseFloat(e.target.value) })
+                    }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                     }}
@@ -639,7 +681,9 @@ export default function GoldList() {
                 type="number"
                 label="Total Invested Amount"
                 value={formData.investedAmount || ''}
-                onChange={(e) => setFormData({ ...formData, investedAmount: parseFloat(e.target.value) })}
+                onChange={e =>
+                  setFormData({ ...formData, investedAmount: parseFloat(e.target.value) })
+                }
                 InputProps={{
                   startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                 }}
@@ -653,7 +697,7 @@ export default function GoldList() {
                 fullWidth
                 label="Link to Goal (optional)"
                 value={formData.goalId || ''}
-                onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+                onChange={e => setFormData({ ...formData, goalId: e.target.value })}
               >
                 <MenuItem value="">None</MenuItem>
                 {goalsData?.goals.map((goal: any) => (

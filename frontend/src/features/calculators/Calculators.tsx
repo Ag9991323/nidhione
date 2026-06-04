@@ -103,7 +103,7 @@ export default function Calculators() {
     const futureValue = P * (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
     const invested = P * n;
     const returns = futureValue - invested;
-    
+
     // Calculate inflation-adjusted value
     const realValue = futureValue / Math.pow(1 + inflationRate, years);
     const realReturns = realValue - invested;
@@ -131,7 +131,7 @@ export default function Calculators() {
     const totalFV = lumpsumFV + sipFV;
     const totalInvested = L + P * n;
     const returns = totalFV - totalInvested;
-    
+
     // Calculate inflation-adjusted value
     const realValue = totalFV / Math.pow(1 + inflationRate, years);
     const realReturns = realValue - totalInvested;
@@ -172,7 +172,7 @@ export default function Calculators() {
 
     const futureValue = P * Math.pow(1 + r, n);
     const returns = futureValue - P;
-    
+
     // Calculate inflation-adjusted value
     const realValue = futureValue / Math.pow(1 + inflationRate, n);
     const realReturns = realValue - P;
@@ -199,7 +199,7 @@ export default function Calculators() {
 
     const invested = P * n;
     const returns = futureValue - invested;
-    
+
     // Calculate inflation-adjusted value
     const realValue = futureValue / Math.pow(1 + inflationRate, n);
     const realReturns = realValue - invested;
@@ -222,7 +222,7 @@ export default function Calculators() {
     // Quarterly compounding
     const futureValue = P * Math.pow(1 + r / 4, 4 * n);
     const returns = futureValue - P;
-    
+
     // Calculate inflation-adjusted value
     const realValue = futureValue / Math.pow(1 + inflationRate, n);
     const realReturns = realValue - P;
@@ -319,7 +319,7 @@ export default function Calculators() {
                         label="Monthly Investment"
                         type="number"
                         value={sipMonthly}
-                        onChange={(e) => setSipMonthly(e.target.value)}
+                        onChange={e => setSipMonthly(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -330,7 +330,7 @@ export default function Calculators() {
                         label="Expected Annual Return"
                         type="number"
                         value={sipRate}
-                        onChange={(e) => setSipRate(e.target.value)}
+                        onChange={e => setSipRate(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -341,7 +341,7 @@ export default function Calculators() {
                         label="Investment Period"
                         type="number"
                         value={sipYears}
-                        onChange={(e) => setSipYears(e.target.value)}
+                        onChange={e => setSipYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -352,7 +352,7 @@ export default function Calculators() {
                         label="Expected Inflation Rate"
                         type="number"
                         value={sipInflation}
-                        onChange={(e) => setSipInflation(e.target.value)}
+                        onChange={e => setSipInflation(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -456,7 +456,7 @@ export default function Calculators() {
                         label="Lumpsum Amount"
                         type="number"
                         value={lumpsum}
-                        onChange={(e) => setLumpsum(e.target.value)}
+                        onChange={e => setLumpsum(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -467,7 +467,7 @@ export default function Calculators() {
                         label="Monthly SIP"
                         type="number"
                         value={sipLumpMonthly}
-                        onChange={(e) => setSipLumpMonthly(e.target.value)}
+                        onChange={e => setSipLumpMonthly(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -478,7 +478,7 @@ export default function Calculators() {
                         label="Expected Annual Return"
                         type="number"
                         value={sipLumpRate}
-                        onChange={(e) => setSipLumpRate(e.target.value)}
+                        onChange={e => setSipLumpRate(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -489,7 +489,7 @@ export default function Calculators() {
                         label="Investment Period"
                         type="number"
                         value={sipLumpYears}
-                        onChange={(e) => setSipLumpYears(e.target.value)}
+                        onChange={e => setSipLumpYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -500,7 +500,7 @@ export default function Calculators() {
                         label="Expected Inflation Rate"
                         type="number"
                         value={sipLumpInflation}
-                        onChange={(e) => setSipLumpInflation(e.target.value)}
+                        onChange={e => setSipLumpInflation(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -604,7 +604,7 @@ export default function Calculators() {
                         label="Loan Amount"
                         type="number"
                         value={loanAmount}
-                        onChange={(e) => setLoanAmount(e.target.value)}
+                        onChange={e => setLoanAmount(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -615,7 +615,7 @@ export default function Calculators() {
                         label="Interest Rate"
                         type="number"
                         value={emiRate}
-                        onChange={(e) => setEmiRate(e.target.value)}
+                        onChange={e => setEmiRate(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -626,7 +626,7 @@ export default function Calculators() {
                         label="Loan Tenure"
                         type="number"
                         value={emiYears}
-                        onChange={(e) => setEmiYears(e.target.value)}
+                        onChange={e => setEmiYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -719,7 +719,7 @@ export default function Calculators() {
                         label="Investment Amount"
                         type="number"
                         value={lumpsumAmount}
-                        onChange={(e) => setLumpsumAmount(e.target.value)}
+                        onChange={e => setLumpsumAmount(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -730,7 +730,7 @@ export default function Calculators() {
                         label="Expected Annual Return"
                         type="number"
                         value={lumpsumRate}
-                        onChange={(e) => setLumpsumRate(e.target.value)}
+                        onChange={e => setLumpsumRate(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -741,7 +741,7 @@ export default function Calculators() {
                         label="Investment Period"
                         type="number"
                         value={lumpsumYears}
-                        onChange={(e) => setLumpsumYears(e.target.value)}
+                        onChange={e => setLumpsumYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -752,7 +752,7 @@ export default function Calculators() {
                         label="Expected Inflation Rate"
                         type="number"
                         value={lumpsumInflation}
-                        onChange={(e) => setLumpsumInflation(e.target.value)}
+                        onChange={e => setLumpsumInflation(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -856,7 +856,7 @@ export default function Calculators() {
                         label="Yearly Investment"
                         type="number"
                         value={ppfYearly}
-                        onChange={(e) => setPpfYearly(e.target.value)}
+                        onChange={e => setPpfYearly(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -868,7 +868,7 @@ export default function Calculators() {
                         label="Investment Period"
                         type="number"
                         value={ppfYears}
-                        onChange={(e) => setPpfYears(e.target.value)}
+                        onChange={e => setPpfYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -880,7 +880,7 @@ export default function Calculators() {
                         label="Expected Inflation Rate"
                         type="number"
                         value={ppfInflation}
-                        onChange={(e) => setPpfInflation(e.target.value)}
+                        onChange={e => setPpfInflation(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -984,7 +984,7 @@ export default function Calculators() {
                         label="Deposit Amount"
                         type="number"
                         value={fdAmount}
-                        onChange={(e) => setFdAmount(e.target.value)}
+                        onChange={e => setFdAmount(e.target.value)}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">₹</InputAdornment>,
                         }}
@@ -995,7 +995,7 @@ export default function Calculators() {
                         label="Interest Rate"
                         type="number"
                         value={fdRate}
-                        onChange={(e) => setFdRate(e.target.value)}
+                        onChange={e => setFdRate(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}
@@ -1006,7 +1006,7 @@ export default function Calculators() {
                         label="Period"
                         type="number"
                         value={fdYears}
-                        onChange={(e) => setFdYears(e.target.value)}
+                        onChange={e => setFdYears(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">Years</InputAdornment>,
                         }}
@@ -1017,7 +1017,7 @@ export default function Calculators() {
                         label="Expected Inflation Rate"
                         type="number"
                         value={fdInflation}
-                        onChange={(e) => setFdInflation(e.target.value)}
+                        onChange={e => setFdInflation(e.target.value)}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">%</InputAdornment>,
                         }}

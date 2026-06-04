@@ -19,7 +19,7 @@ const updateBankAccountSchema = z.object({
 export async function getAllBankAccounts(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const bankAccounts = await prisma.bankAccount.findMany({
       where: { userId },
       include: {
@@ -32,7 +32,7 @@ export async function getAllBankAccounts(request: FastifyRequest, reply: Fastify
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send({ bankAccounts });
   } catch (error) {
     console.error('Get bank accounts error:', error);
@@ -44,7 +44,7 @@ export async function createBankAccount(request: FastifyRequest, reply: FastifyR
   try {
     const userId = (request.user as any).userId;
     const data = createBankAccountSchema.parse(request.body);
-    
+
     const bankAccount = await prisma.bankAccount.create({
       data: {
         userId,
@@ -62,7 +62,7 @@ export async function createBankAccount(request: FastifyRequest, reply: FastifyR
         },
       },
     });
-    
+
     return reply.code(201).send({ bankAccount });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -78,15 +78,15 @@ export async function updateBankAccount(request: FastifyRequest, reply: FastifyR
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateBankAccountSchema.parse(request.body);
-    
+
     const existingAccount = await prisma.bankAccount.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingAccount) {
       return reply.code(404).send({ error: 'Bank account not found' });
     }
-    
+
     const bankAccount = await prisma.bankAccount.update({
       where: { id },
       data: {
@@ -105,7 +105,7 @@ export async function updateBankAccount(request: FastifyRequest, reply: FastifyR
         },
       },
     });
-    
+
     return reply.send({ bankAccount });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -120,19 +120,19 @@ export async function deleteBankAccount(request: FastifyRequest, reply: FastifyR
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     const existingAccount = await prisma.bankAccount.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingAccount) {
       return reply.code(404).send({ error: 'Bank account not found' });
     }
-    
+
     await prisma.bankAccount.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Bank account deleted successfully' });
   } catch (error) {
     console.error('Delete bank account error:', error);

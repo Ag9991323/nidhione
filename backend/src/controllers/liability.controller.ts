@@ -4,17 +4,27 @@ import { z } from 'zod';
 
 const createLiabilitySchema = z.object({
   name: z.string().min(1),
-  type: z.enum(['home_loan', 'car_loan', 'personal_loan', 'credit_card', 'education_loan', 'other']),
+  type: z.enum([
+    'home_loan',
+    'car_loan',
+    'personal_loan',
+    'credit_card',
+    'education_loan',
+    'other',
+  ]),
   principalAmount: z.number().positive(),
   currentBalance: z.number().min(0),
   interestRate: z.number().min(0),
   emiAmount: z.number().positive().optional(),
-  startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+  startDate: z.string().refine(date => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
-  endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }).optional(),
+  endDate: z
+    .string()
+    .refine(date => !isNaN(Date.parse(date)), {
+      message: 'Invalid date format',
+    })
+    .optional(),
   lender: z.string().optional(),
 });
 
@@ -23,12 +33,12 @@ const updateLiabilitySchema = createLiabilitySchema.partial();
 export async function getAllLiabilities(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const liabilities = await prisma.liability.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send(liabilities);
   } catch (error) {
     console.error('Get liabilities error:', error);
@@ -40,7 +50,7 @@ export async function createLiability(request: FastifyRequest, reply: FastifyRep
   try {
     const userId = (request.user as any).userId;
     const data = createLiabilitySchema.parse(request.body);
-    
+
     const liability = await prisma.liability.create({
       data: {
         userId,
@@ -55,7 +65,7 @@ export async function createLiability(request: FastifyRequest, reply: FastifyRep
         lender: data.lender,
       },
     });
-    
+
     return reply.code(201).send(liability);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -71,16 +81,16 @@ export async function updateLiability(request: FastifyRequest, reply: FastifyRep
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
     const data = updateLiabilitySchema.parse(request.body);
-    
+
     // Check ownership
     const existing = await prisma.liability.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'Liability not found' });
     }
-    
+
     const updateData: any = {};
     if (data.name) updateData.name = data.name;
     if (data.type) updateData.type = data.type;
@@ -89,14 +99,15 @@ export async function updateLiability(request: FastifyRequest, reply: FastifyRep
     if (data.interestRate !== undefined) updateData.interestRate = data.interestRate;
     if (data.emiAmount !== undefined) updateData.emiAmount = data.emiAmount;
     if (data.startDate) updateData.startDate = new Date(data.startDate);
-    if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : null;
+    if (data.endDate !== undefined)
+      updateData.endDate = data.endDate ? new Date(data.endDate) : null;
     if (data.lender !== undefined) updateData.lender = data.lender;
-    
+
     const liability = await prisma.liability.update({
       where: { id },
       data: updateData,
     });
-    
+
     return reply.send(liability);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -111,20 +122,20 @@ export async function deleteLiability(request: FastifyRequest, reply: FastifyRep
   try {
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
-    
+
     // Check ownership
     const existing = await prisma.liability.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'Liability not found' });
     }
-    
+
     await prisma.liability.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Liability deleted successfully' });
   } catch (error) {
     console.error('Delete liability error:', error);

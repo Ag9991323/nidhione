@@ -7,7 +7,7 @@ const createLICSchema = z.object({
   policyName: z.string().min(1),
   sumAssured: z.number().positive(),
   premiumAmount: z.number().positive(),
-  maturityDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+  maturityDate: z.string().refine(date => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
   currentValue: z.number().optional(),
@@ -19,7 +19,7 @@ const updateLICSchema = createLICSchema.partial();
 export async function getAllLIC(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const licPolicies = await prisma.lIC.findMany({
       where: { userId },
       include: {
@@ -32,7 +32,7 @@ export async function getAllLIC(request: FastifyRequest, reply: FastifyReply) {
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send(licPolicies);
   } catch (error) {
     console.error('Get LIC error:', error);
@@ -44,7 +44,7 @@ export async function createLIC(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
     const data = createLICSchema.parse(request.body);
-    
+
     const lic = await prisma.lIC.create({
       data: {
         userId,
@@ -65,7 +65,7 @@ export async function createLIC(request: FastifyRequest, reply: FastifyReply) {
         },
       },
     });
-    
+
     return reply.code(201).send(lic);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -81,16 +81,16 @@ export async function updateLIC(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
     const data = updateLICSchema.parse(request.body);
-    
+
     // Check ownership
     const existing = await prisma.lIC.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'LIC policy not found' });
     }
-    
+
     const updateData: any = {};
     if (data.policyNumber) updateData.policyNumber = data.policyNumber;
     if (data.policyName) updateData.policyName = data.policyName;
@@ -99,7 +99,7 @@ export async function updateLIC(request: FastifyRequest, reply: FastifyReply) {
     if (data.maturityDate) updateData.maturityDate = new Date(data.maturityDate);
     if (data.currentValue !== undefined) updateData.currentValue = data.currentValue;
     if (data.goalId !== undefined) updateData.goalId = data.goalId;
-    
+
     const lic = await prisma.lIC.update({
       where: { id },
       data: updateData,
@@ -112,7 +112,7 @@ export async function updateLIC(request: FastifyRequest, reply: FastifyReply) {
         },
       },
     });
-    
+
     return reply.send(lic);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -127,20 +127,20 @@ export async function deleteLIC(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
-    
+
     // Check ownership
     const existing = await prisma.lIC.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'LIC policy not found' });
     }
-    
+
     await prisma.lIC.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'LIC policy deleted successfully' });
   } catch (error) {
     console.error('Delete LIC error:', error);

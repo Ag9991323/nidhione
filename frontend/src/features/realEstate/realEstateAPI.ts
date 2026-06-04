@@ -35,7 +35,7 @@ export const realEstateAPI = createApi({
   reducerPath: 'realEstateAPI',
   baseQuery: fetchBaseQuery({
     baseUrl,
-    prepareHeaders: (headers) => {
+    prepareHeaders: headers => {
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
@@ -44,20 +44,23 @@ export const realEstateAPI = createApi({
     },
   }),
   tagTypes: ['RealEstate'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getRealEstate: builder.query<RealEstate[], void>({
       query: () => '/real-estate',
       providesTags: ['RealEstate'],
     }),
     createRealEstate: builder.mutation<RealEstate, CreateRealEstateData>({
-      query: (data) => ({
+      query: data => ({
         url: '/real-estate',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['RealEstate'],
     }),
-    updateRealEstate: builder.mutation<RealEstate, { id: string; data: Partial<CreateRealEstateData> }>({
+    updateRealEstate: builder.mutation<
+      RealEstate,
+      { id: string; data: Partial<CreateRealEstateData> }
+    >({
       query: ({ id, data }) => ({
         url: `/real-estate/${id}`,
         method: 'PUT',
@@ -66,7 +69,7 @@ export const realEstateAPI = createApi({
       invalidatesTags: ['RealEstate'],
     }),
     deleteRealEstate: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/real-estate/${id}`,
         method: 'DELETE',
       }),

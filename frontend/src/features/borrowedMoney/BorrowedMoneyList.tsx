@@ -16,7 +16,12 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataTable } from '@/shared/components';
-import { useGetBorrowedMoneyQuery, useCreateBorrowedMoneyMutation, useUpdateBorrowedMoneyMutation, useDeleteBorrowedMoneyMutation } from './borrowedMoneyAPI';
+import {
+  useGetBorrowedMoneyQuery,
+  useCreateBorrowedMoneyMutation,
+  useUpdateBorrowedMoneyMutation,
+  useDeleteBorrowedMoneyMutation,
+} from './borrowedMoneyAPI';
 import { formatCurrency } from '@/utils/formatters';
 
 interface FormData {
@@ -131,7 +136,10 @@ export default function BorrowedMoneyList() {
   };
 
   const totalBorrowed = borrowedMoney.reduce((sum, item) => sum + item.amount, 0);
-  const totalOutstanding = borrowedMoney.reduce((sum, item) => sum + (item.amount - item.amountReturned), 0);
+  const totalOutstanding = borrowedMoney.reduce(
+    (sum, item) => sum + (item.amount - item.amountReturned),
+    0,
+  );
   const totalReturned = borrowedMoney.reduce((sum, item) => sum + item.amountReturned, 0);
 
   if (isLoading) {
@@ -149,34 +157,46 @@ export default function BorrowedMoneyList() {
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Total Borrowed</Typography>
-          <Typography variant="h5" color="error.main">{formatCurrency(totalBorrowed)}</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Total Borrowed
+          </Typography>
+          <Typography variant="h5" color="error.main">
+            {formatCurrency(totalBorrowed)}
+          </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Outstanding</Typography>
-          <Typography variant="h5" color="warning.main">{formatCurrency(totalOutstanding)}</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Outstanding
+          </Typography>
+          <Typography variant="h5" color="warning.main">
+            {formatCurrency(totalOutstanding)}
+          </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: 1 }}>
-          <Typography variant="subtitle2" color="textSecondary">Returned</Typography>
-          <Typography variant="h5" color="success.main">{formatCurrency(totalReturned)}</Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Returned
+          </Typography>
+          <Typography variant="h5" color="success.main">
+            {formatCurrency(totalReturned)}
+          </Typography>
         </Paper>
       </Box>
 
       <DataTable
         columns={[
           { id: 'lenderName', label: 'Lender Name' },
-          { id: 'amount', label: 'Amount', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'interestRate', label: 'Interest Rate', align: 'right', format: (v) => `${v || 0}%` },
-          { id: 'borrowDate', label: 'Borrow Date', format: (v) => new Date(v).toLocaleDateString() },
-          { 
-            id: 'returnDate', 
-            label: 'Return Date', 
-            format: (v) => v ? new Date(v).toLocaleDateString() : '-'
+          { id: 'amount', label: 'Amount', align: 'right', format: v => formatCurrency(v) },
+          { id: 'interestRate', label: 'Interest Rate', align: 'right', format: v => `${v || 0}%` },
+          { id: 'borrowDate', label: 'Borrow Date', format: v => new Date(v).toLocaleDateString() },
+          {
+            id: 'returnDate',
+            label: 'Return Date',
+            format: v => (v ? new Date(v).toLocaleDateString() : '-'),
           },
           {
             id: 'status',
             label: 'Status',
-            format: (v) => (
+            format: v => (
               <Chip
                 label={statusOptions.find(s => s.value === v)?.label}
                 color={statusOptions.find(s => s.value === v)?.color}
@@ -190,7 +210,7 @@ export default function BorrowedMoneyList() {
             align: 'right',
             format: (_, row) => formatCurrency(row.amount - row.amountReturned),
           },
-          { id: 'notes', label: 'Notes', format: (v) => v || '-' },
+          { id: 'notes', label: 'Notes', format: v => v || '-' },
           {
             id: 'actions',
             label: 'Actions',
@@ -215,12 +235,16 @@ export default function BorrowedMoneyList() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Edit Record' : 'Add Record'}</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             label="Lender Name"
             value={formData.lenderName}
-            onChange={(e) => setFormData({ ...formData, lenderName: e.target.value })}
+            onChange={e => setFormData({ ...formData, lenderName: e.target.value })}
             margin="normal"
             required
           />
@@ -229,7 +253,7 @@ export default function BorrowedMoneyList() {
             label="Amount"
             type="number"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            onChange={e => setFormData({ ...formData, amount: e.target.value })}
             margin="normal"
             required
           />
@@ -238,7 +262,7 @@ export default function BorrowedMoneyList() {
             label="Interest Rate (%)"
             type="number"
             value={formData.interestRate}
-            onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+            onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
             margin="normal"
           />
           <TextField
@@ -246,7 +270,7 @@ export default function BorrowedMoneyList() {
             label="Borrow Date"
             type="date"
             value={formData.borrowDate}
-            onChange={(e) => setFormData({ ...formData, borrowDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, borrowDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             required
@@ -256,7 +280,7 @@ export default function BorrowedMoneyList() {
             label="Return Date"
             type="date"
             value={formData.returnDate}
-            onChange={(e) => setFormData({ ...formData, returnDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, returnDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             helperText="Optional"
@@ -266,11 +290,11 @@ export default function BorrowedMoneyList() {
             select
             label="Status"
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+            onChange={e => setFormData({ ...formData, status: e.target.value as any })}
             margin="normal"
             required
           >
-            {statusOptions.map((option) => (
+            {statusOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -281,7 +305,7 @@ export default function BorrowedMoneyList() {
             label="Amount Returned"
             type="number"
             value={formData.amountReturned}
-            onChange={(e) => setFormData({ ...formData, amountReturned: e.target.value })}
+            onChange={e => setFormData({ ...formData, amountReturned: e.target.value })}
             margin="normal"
           />
           <TextField
@@ -290,7 +314,7 @@ export default function BorrowedMoneyList() {
             multiline
             rows={3}
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={e => setFormData({ ...formData, notes: e.target.value })}
             margin="normal"
             helperText="Optional"
           />

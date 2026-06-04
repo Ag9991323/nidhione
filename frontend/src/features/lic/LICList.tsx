@@ -15,7 +15,12 @@ import {
   Chip,
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
-import { useGetLICQuery, useCreateLICMutation, useUpdateLICMutation, useDeleteLICMutation } from './licAPI';
+import {
+  useGetLICQuery,
+  useCreateLICMutation,
+  useUpdateLICMutation,
+  useDeleteLICMutation,
+} from './licAPI';
 import { useGetGoalsQuery } from '@/features/goals/goalsAPI';
 import { formatCurrency } from '@/utils/formatters';
 import { DataTable } from '@/shared/components';
@@ -91,8 +96,13 @@ export default function LICList() {
     setIsSubmitting(true);
 
     try {
-      if (!formData.policyNumber || !formData.policyName || !formData.sumAssured || 
-          !formData.premiumAmount || !formData.maturityDate) {
+      if (
+        !formData.policyNumber ||
+        !formData.policyName ||
+        !formData.sumAssured ||
+        !formData.premiumAmount ||
+        !formData.maturityDate
+      ) {
         setError('Please fill all required fields');
         setIsSubmitting(false);
         return;
@@ -147,7 +157,9 @@ export default function LICList() {
 
       <Box sx={{ mb: 3 }}>
         <Paper sx={{ p: 2 }}>
-          <Typography variant="body2" color="text.secondary">Total Value</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Value
+          </Typography>
           <Typography variant="h6">{formatCurrency(totalValue)}</Typography>
         </Paper>
       </Box>
@@ -156,14 +168,29 @@ export default function LICList() {
         columns={[
           { id: 'policyNumber', label: 'Policy Number' },
           { id: 'policyName', label: 'Policy Name' },
-          { id: 'sumAssured', label: 'Sum Assured', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'premiumAmount', label: 'Premium', align: 'right', format: (v) => formatCurrency(v) },
-          { id: 'maturityDate', label: 'Maturity Date', format: (v) => new Date(v).toLocaleDateString() },
-          { id: 'currentValue', label: 'Current Value', align: 'right', format: (v) => formatCurrency(v) },
-          { 
-            id: 'goal', 
-            label: 'Goal', 
-            format: (v) => v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-'
+          {
+            id: 'sumAssured',
+            label: 'Sum Assured',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
+          { id: 'premiumAmount', label: 'Premium', align: 'right', format: v => formatCurrency(v) },
+          {
+            id: 'maturityDate',
+            label: 'Maturity Date',
+            format: v => new Date(v).toLocaleDateString(),
+          },
+          {
+            id: 'currentValue',
+            label: 'Current Value',
+            align: 'right',
+            format: v => formatCurrency(v),
+          },
+          {
+            id: 'goal',
+            label: 'Goal',
+            format: v =>
+              v ? <Chip label={v.name} size="small" color="primary" variant="outlined" /> : '-',
           },
           {
             id: 'actions',
@@ -189,12 +216,16 @@ export default function LICList() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Edit LIC Policy' : 'Add LIC Policy'}</DialogTitle>
         <DialogContent>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             fullWidth
             label="Policy Number"
             value={formData.policyNumber}
-            onChange={(e) => setFormData({ ...formData, policyNumber: e.target.value })}
+            onChange={e => setFormData({ ...formData, policyNumber: e.target.value })}
             margin="normal"
             required
           />
@@ -202,7 +233,7 @@ export default function LICList() {
             fullWidth
             label="Policy Name"
             value={formData.policyName}
-            onChange={(e) => setFormData({ ...formData, policyName: e.target.value })}
+            onChange={e => setFormData({ ...formData, policyName: e.target.value })}
             margin="normal"
             required
           />
@@ -211,7 +242,7 @@ export default function LICList() {
             label="Sum Assured"
             type="number"
             value={formData.sumAssured}
-            onChange={(e) => setFormData({ ...formData, sumAssured: e.target.value })}
+            onChange={e => setFormData({ ...formData, sumAssured: e.target.value })}
             margin="normal"
             required
           />
@@ -220,7 +251,7 @@ export default function LICList() {
             label="Premium Amount"
             type="number"
             value={formData.premiumAmount}
-            onChange={(e) => setFormData({ ...formData, premiumAmount: e.target.value })}
+            onChange={e => setFormData({ ...formData, premiumAmount: e.target.value })}
             margin="normal"
             required
           />
@@ -229,7 +260,7 @@ export default function LICList() {
             label="Maturity Date"
             type="date"
             value={formData.maturityDate}
-            onChange={(e) => setFormData({ ...formData, maturityDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, maturityDate: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
             required
@@ -239,7 +270,7 @@ export default function LICList() {
             label="Current Value"
             type="number"
             value={formData.currentValue}
-            onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
+            onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
             margin="normal"
             helperText="Leave empty to use sum assured"
           />
@@ -248,7 +279,7 @@ export default function LICList() {
             select
             label="Goal (Optional)"
             value={formData.goalId}
-            onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
+            onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             margin="normal"
           >
             <MenuItem value="">None</MenuItem>

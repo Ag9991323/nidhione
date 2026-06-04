@@ -13,6 +13,29 @@ export interface RegisterRequest {
   password: string;
   name: string;
   mobile?: string;
+  otp: string;
+}
+
+export interface SendOtpRequest {
+  email: string;
+}
+
+export interface SendOtpResponse {
+  message: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
+export interface MessageResponse {
+  message: string;
 }
 
 export interface AuthResponse {
@@ -43,23 +66,44 @@ export const authAPI = createApi({
       return headers;
     },
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
-      query: (credentials) => ({
+      query: credentials => ({
         url: '/login',
         method: 'POST',
         body: credentials,
       }),
     }),
+    sendOtp: builder.mutation<SendOtpResponse, SendOtpRequest>({
+      query: body => ({
+        url: '/send-otp',
+        method: 'POST',
+        body,
+      }),
+    }),
     register: builder.mutation<AuthResponse, RegisterRequest>({
-      query: (userData) => ({
+      query: userData => ({
         url: '/register',
         method: 'POST',
         body: userData,
       }),
     }),
+    forgotPassword: builder.mutation<MessageResponse, ForgotPasswordRequest>({
+      query: body => ({
+        url: '/forgot-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
+      query: body => ({
+        url: '/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
     googleLogin: builder.mutation<AuthResponse, GoogleLoginRequest>({
-      query: (payload) => ({
+      query: payload => ({
         url: '/google',
         method: 'POST',
         body: payload,
@@ -73,7 +117,10 @@ export const authAPI = createApi({
 
 export const {
   useLoginMutation,
+  useSendOtpMutation,
   useRegisterMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGoogleLoginMutation,
   useGetProfileQuery,
 } = authAPI;

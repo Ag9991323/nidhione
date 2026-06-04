@@ -34,7 +34,7 @@ export default function DataTable({
   rows,
   isLoading = false,
   emptyMessage = 'No data found',
-  getRowId = (row) => row.id,
+  getRowId = row => row.id,
   maxHeight = 'calc(100vh - 280px)',
 }: DataTableProps) {
   if (isLoading) {
@@ -50,7 +50,7 @@ export default function DataTable({
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            {columns.map((column) => (
+            {columns.map(column => (
               <TableCell
                 key={column.id}
                 align={column.align || 'left'}
@@ -71,9 +71,9 @@ export default function DataTable({
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((row) => (
+            rows.map(row => (
               <TableRow hover key={getRowId(row)}>
-                {columns.map((column) => {
+                {columns.map(column => {
                   const value = row[column.id];
                   return (
                     <TableCell key={column.id} align={column.align || 'left'}>

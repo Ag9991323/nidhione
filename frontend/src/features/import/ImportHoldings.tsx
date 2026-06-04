@@ -42,12 +42,15 @@ type MFImport = {
 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const normalizeHeader = (value: string) =>
-  value.toLowerCase().replace(/\s|_|-|\./g, '').trim();
+  value
+    .toLowerCase()
+    .replace(/\s|_|-|\./g, '')
+    .trim();
 
 const parseNumber = (value: unknown) => {
   if (typeof value === 'number') return value;
   if (typeof value !== 'string') return NaN;
-  const cleaned = value.replace(/[^0-9.\-]/g, '');
+  const cleaned = value.replace(/[^0-9.-]/g, '');
   return cleaned ? Number(cleaned) : NaN;
 };
 
@@ -58,24 +61,16 @@ const inferExchange = (value?: string) => {
   return 'NSE';
 };
 
-const STOCK_TEMPLATE_HEADERS = [
-  'Symbol',
-  'Quantity',
-  'AveragePrice',
-];
+const STOCK_TEMPLATE_HEADERS = ['Symbol', 'Quantity', 'AveragePrice'];
 
-const MF_TEMPLATE_HEADERS = [
-  'SchemeName',
-  'Units',
-  'AverageNav',
-];
+const MF_TEMPLATE_HEADERS = ['SchemeName', 'Units', 'AverageNav'];
 
 const findHeaderRowIndex = (rows: Array<Array<unknown>>, required: string[]) => {
   const requiredNormalized = required.map(normalizeHeader);
   for (let i = 0; i < Math.min(rows.length, 10); i += 1) {
     const row = rows[i] as Array<unknown>;
-    const normalized = row.map((cell) => normalizeHeader(String(cell || '')));
-    if (requiredNormalized.every((key) => normalized.includes(key))) {
+    const normalized = row.map(cell => normalizeHeader(String(cell || '')));
+    if (requiredNormalized.every(key => normalized.includes(key))) {
       return i;
     }
   }
@@ -110,7 +105,9 @@ export default function ImportHoldings() {
   const [mutualFunds, setMutualFunds] = useState<MFImport[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<{ stocks: number; mutualFunds: number } | null>(null);
+  const [importResult, setImportResult] = useState<{ stocks: number; mutualFunds: number } | null>(
+    null,
+  );
   const [importErrors, setImportErrors] = useState<string[]>([]);
 
   const headerMatchers: Record<string, string[]> = {
@@ -119,7 +116,16 @@ export default function ImportHoldings() {
     exchange: ['exchange', 'exch', 'market'],
     quantity: ['qty', 'quantity', 'shares', 'units'],
     units: ['units', 'qty', 'quantity'],
-    averagePrice: ['avgprice', 'averageprice', 'avgcost', 'cost', 'purchaseprice', 'buyprice', 'rate', 'price'],
+    averagePrice: [
+      'avgprice',
+      'averageprice',
+      'avgcost',
+      'cost',
+      'purchaseprice',
+      'buyprice',
+      'rate',
+      'price',
+    ],
     schemeCode: ['schemecode', 'schemecode', 'amficode', 'code'],
     schemeName: ['schemename', 'schemename', 'scheme', 'fund', 'mutualfund', 'fundname'],
     amcName: ['amc', 'amcname', 'fundhouse'],
@@ -128,7 +134,7 @@ export default function ImportHoldings() {
 
   const parseStockRows = (rows: Record<string, unknown>[], headers: string[], errors: string[]) => {
     const stockHeaderMap = new Map<string, string>();
-    headers.forEach((header) => {
+    headers.forEach(header => {
       const normalized = normalizeHeader(header);
       Object.entries(headerMatchers).forEach(([key, values]) => {
         if (values.includes(normalized) && !stockHeaderMap.has(key)) {
@@ -139,7 +145,9 @@ export default function ImportHoldings() {
 
     const parsed: StockImport[] = [];
     rows.forEach((row, index) => {
-      const symbol = stockHeaderMap.get('symbol') ? String(row[stockHeaderMap.get('symbol') as string]).trim() : '';
+      const symbol = stockHeaderMap.get('symbol')
+        ? String(row[stockHeaderMap.get('symbol') as string]).trim()
+        : '';
       const companyName = stockHeaderMap.get('companyName')
         ? String(row[stockHeaderMap.get('companyName') as string]).trim()
         : symbol;
@@ -174,7 +182,7 @@ export default function ImportHoldings() {
 
   const parseMFRows = (rows: Record<string, unknown>[], headers: string[], errors: string[]) => {
     const mfHeaderMap = new Map<string, string>();
-    headers.forEach((header) => {
+    headers.forEach(header => {
       const normalized = normalizeHeader(header);
       Object.entries(headerMatchers).forEach(([key, values]) => {
         if (values.includes(normalized) && !mfHeaderMap.has(key)) {
@@ -185,15 +193,19 @@ export default function ImportHoldings() {
 
     const parsed: MFImport[] = [];
     rows.forEach((row, index) => {
-      const schemeCode = mfHeaderMap.get('schemeCode') ? String(row[mfHeaderMap.get('schemeCode') as string]).trim() : '';
-      const schemeName = mfHeaderMap.get('schemeName') ? String(row[mfHeaderMap.get('schemeName') as string]).trim() : '';
-      const amcName = mfHeaderMap.get('amcName') ? String(row[mfHeaderMap.get('amcName') as string]).trim() : '';
+      const schemeCode = mfHeaderMap.get('schemeCode')
+        ? String(row[mfHeaderMap.get('schemeCode') as string]).trim()
+        : '';
+      const schemeName = mfHeaderMap.get('schemeName')
+        ? String(row[mfHeaderMap.get('schemeName') as string]).trim()
+        : '';
+      const amcName = mfHeaderMap.get('amcName')
+        ? String(row[mfHeaderMap.get('amcName') as string]).trim()
+        : '';
       const unitsKey = mfHeaderMap.get('units');
       const units = parseNumber(unitsKey ? row[unitsKey] : '');
       const averageNav = parseNumber(
-        mfHeaderMap.get('averageNav')
-          ? row[mfHeaderMap.get('averageNav') as string]
-          : ''
+        mfHeaderMap.get('averageNav') ? row[mfHeaderMap.get('averageNav') as string] : '',
       );
 
       if (!schemeName && Number.isNaN(units) && Number.isNaN(averageNav)) {
@@ -219,7 +231,11 @@ export default function ImportHoldings() {
 
   const handleFiles = async (files: FileList) => {
     setIsParsing(true);
-    setFileName(Array.from(files).map((f) => f.name).join(', '));
+    setFileName(
+      Array.from(files)
+        .map(f => f.name)
+        .join(', '),
+    );
     setParseErrors([]);
     setImportResult(null);
     setImportErrors([]);
@@ -278,14 +294,22 @@ export default function ImportHoldings() {
             continue;
           }
 
-          const stockMatrix = XLSX.utils.sheet_to_json<Array<unknown>>(stockSheet, { header: 1, defval: '' });
-          const mfMatrix = XLSX.utils.sheet_to_json<Array<unknown>>(mfSheet, { header: 1, defval: '' });
+          const stockMatrix = XLSX.utils.sheet_to_json<Array<unknown>>(stockSheet, {
+            header: 1,
+            defval: '',
+          });
+          const mfMatrix = XLSX.utils.sheet_to_json<Array<unknown>>(mfSheet, {
+            header: 1,
+            defval: '',
+          });
 
           const stockHeaderRowIndex = findHeaderRowIndex(stockMatrix, STOCK_TEMPLATE_HEADERS);
           const mfHeaderRowIndex = findHeaderRowIndex(mfMatrix, MF_TEMPLATE_HEADERS);
 
           if (stockHeaderRowIndex === -1 || mfHeaderRowIndex === -1) {
-            errors.push('Only the official template format is allowed. Please download the template and fill it.');
+            errors.push(
+              'Only the official template format is allowed. Please download the template and fill it.',
+            );
             continue;
           }
 
@@ -304,7 +328,9 @@ export default function ImportHoldings() {
           parsedStocks = parsedStocks.concat(parseStockRows(stockRows, stockHeaders, errors));
           parsedMFs = parsedMFs.concat(parseMFRows(mfRows, mfHeaders, errors));
         } catch (error) {
-          errors.push(`"${file.name}" could not be read. If it is a Numbers file, export to XLSX/CSV.`);
+          errors.push(
+            `"${file.name}" could not be read. If it is a Numbers file, export to XLSX/CSV.`,
+          );
         }
       }
 
@@ -350,7 +376,7 @@ export default function ImportHoldings() {
 
       if (Array.isArray(data?.errors) && data.errors.length) {
         setImportErrors(
-          data.errors.map((err: any) => `${err.type} row ${err.index + 1}: ${err.message}`)
+          data.errors.map((err: any) => `${err.type} row ${err.index + 1}: ${err.message}`),
         );
       }
     } catch (error) {
@@ -388,25 +414,17 @@ export default function ImportHoldings() {
               }}
             >
               <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
-                <Button
-                  variant="outlined"
-                  startIcon={<Download />}
-                  onClick={downloadTemplate}
-                >
+                <Button variant="outlined" startIcon={<Download />} onClick={downloadTemplate}>
                   Download Template
                 </Button>
-                <Button
-                  variant="outlined"
-                  component="label"
-                  startIcon={<CloudUpload />}
-                >
+                <Button variant="outlined" component="label" startIcon={<CloudUpload />}>
                   Upload XLSX/CSV/Numbers
                   <input
                     type="file"
                     accept=".xlsx, .xls, .csv, .numbers"
                     multiple
                     hidden
-                    onChange={(e) => {
+                    onChange={e => {
                       const files = e.target.files;
                       if (files && files.length) {
                         handleFiles(files);
@@ -434,7 +452,11 @@ export default function ImportHoldings() {
 
             <Stack direction="row" spacing={2} flexWrap="wrap">
               <Chip label={`Stocks: ${stocks.length}`} color="primary" variant="outlined" />
-              <Chip label={`Mutual Funds: ${mutualFunds.length}`} color="secondary" variant="outlined" />
+              <Chip
+                label={`Mutual Funds: ${mutualFunds.length}`}
+                color="secondary"
+                variant="outlined"
+              />
               <Chip label={`Errors: ${parseErrors.length}`} variant="outlined" />
             </Stack>
           </Stack>
@@ -467,7 +489,7 @@ export default function ImportHoldings() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {stockPreview.map((row) => (
+                    {stockPreview.map(row => (
                       <TableRow key={`${row.symbol}-${row.companyName}`}>
                         <TableCell>{row.symbol}</TableCell>
                         <TableCell>{row.companyName}</TableCell>
@@ -497,7 +519,7 @@ export default function ImportHoldings() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {mfPreview.map((row) => (
+                    {mfPreview.map(row => (
                       <TableRow key={`${row.schemeCode || row.schemeName}-${row.units}`}>
                         <TableCell>{row.schemeName}</TableCell>
                         <TableCell>{row.schemeCode || '-'}</TableCell>

@@ -21,5 +21,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AppRoutes />
       </ThemeProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

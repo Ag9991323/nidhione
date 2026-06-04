@@ -22,7 +22,7 @@ const updateGoalSchema = z.object({
 export async function getAllGoals(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const goals = await prisma.goal.findMany({
       where: { userId },
       include: {
@@ -33,7 +33,7 @@ export async function getAllGoals(request: FastifyRequest, reply: FastifyReply) 
       },
       orderBy: { targetDate: 'asc' },
     });
-    
+
     // Calculate current amount for each goal
     type GoalWithRelations = Goal & {
       stocks: Stock[];
@@ -41,23 +41,35 @@ export async function getAllGoals(request: FastifyRequest, reply: FastifyReply) 
       bankAccounts: BankAccount[];
       fixedDeposits: FixedDeposit[];
     };
-    
+
     const goalsWithProgress = goals.map((goal: GoalWithRelations) => {
-      const stocksValue = goal.stocks.reduce((sum: number, s: Stock) => sum + (s.currentValue || s.investedAmount), 0);
-      const mfValue = goal.mutualFunds.reduce((sum: number, m: MutualFund) => sum + (m.currentValue || m.investedAmount), 0);
-      const bankValue = goal.bankAccounts.reduce((sum: number, b: BankAccount) => sum + b.balance, 0);
-      const fdValue = goal.fixedDeposits.reduce((sum: number, f: FixedDeposit) => sum + f.amount, 0);
-      
+      const stocksValue = goal.stocks.reduce(
+        (sum: number, s: Stock) => sum + (s.currentValue || s.investedAmount),
+        0,
+      );
+      const mfValue = goal.mutualFunds.reduce(
+        (sum: number, m: MutualFund) => sum + (m.currentValue || m.investedAmount),
+        0,
+      );
+      const bankValue = goal.bankAccounts.reduce(
+        (sum: number, b: BankAccount) => sum + b.balance,
+        0,
+      );
+      const fdValue = goal.fixedDeposits.reduce(
+        (sum: number, f: FixedDeposit) => sum + f.amount,
+        0,
+      );
+
       const currentAmount = stocksValue + mfValue + bankValue + fdValue;
       const progress = (currentAmount / goal.targetAmount) * 100;
-      
+
       return {
         ...goal,
         currentAmount,
         progress: Math.min(progress, 100),
       };
     });
-    
+
     return reply.send({ goals: goalsWithProgress });
   } catch (error) {
     console.error('Get goals error:', error);
@@ -69,7 +81,7 @@ export async function createGoal(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
     const data = createGoalSchema.parse(request.body);
-    
+
     const goal = await prisma.goal.create({
       data: {
         userId,
@@ -80,7 +92,7 @@ export async function createGoal(request: FastifyRequest, reply: FastifyReply) {
         description: data.description,
       },
     });
-    
+
     return reply.code(201).send({ goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -96,15 +108,15 @@ export async function updateGoal(request: FastifyRequest, reply: FastifyReply) {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
     const data = updateGoalSchema.parse(request.body);
-    
+
     const existingGoal = await prisma.goal.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingGoal) {
       return reply.code(404).send({ error: 'Goal not found' });
     }
-    
+
     const goal = await prisma.goal.update({
       where: { id },
       data: {
@@ -115,7 +127,7 @@ export async function updateGoal(request: FastifyRequest, reply: FastifyReply) {
         description: data.description,
       },
     });
-    
+
     return reply.send({ goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -130,19 +142,19 @@ export async function deleteGoal(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
     const { id } = request.params as { id: string };
-    
+
     const existingGoal = await prisma.goal.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existingGoal) {
       return reply.code(404).send({ error: 'Goal not found' });
     }
-    
+
     await prisma.goal.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Goal deleted successfully' });
   } catch (error) {
     console.error('Delete goal error:', error);

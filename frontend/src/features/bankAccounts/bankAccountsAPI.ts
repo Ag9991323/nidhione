@@ -45,20 +45,23 @@ export const bankAccountsAPI = createApi({
     },
   }),
   tagTypes: ['BankAccount'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getBankAccounts: builder.query<{ bankAccounts: BankAccount[] }, void>({
       query: () => '/',
       providesTags: ['BankAccount'],
     }),
     createBankAccount: builder.mutation<{ bankAccount: BankAccount }, CreateBankAccountRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['BankAccount'],
     }),
-    updateBankAccount: builder.mutation<{ bankAccount: BankAccount }, { id: string; data: UpdateBankAccountRequest }>({
+    updateBankAccount: builder.mutation<
+      { bankAccount: BankAccount },
+      { id: string; data: UpdateBankAccountRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -67,7 +70,7 @@ export const bankAccountsAPI = createApi({
       invalidatesTags: ['BankAccount'],
     }),
     deleteBankAccount: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

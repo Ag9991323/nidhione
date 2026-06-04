@@ -17,7 +17,7 @@ const updateCryptoSchema = createCryptoSchema.partial();
 export async function getAllCrypto(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).userId;
-    
+
     const cryptoAssets = await prisma.crypto.findMany({
       where: { userId },
       include: {
@@ -30,7 +30,7 @@ export async function getAllCrypto(request: FastifyRequest, reply: FastifyReply)
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return reply.send(cryptoAssets);
   } catch (error) {
     console.error('Get crypto error:', error);
@@ -42,7 +42,7 @@ export async function createCrypto(request: FastifyRequest, reply: FastifyReply)
   try {
     const userId = (request.user as any).userId;
     const data = createCryptoSchema.parse(request.body);
-    
+
     const crypto = await prisma.crypto.create({
       data: {
         userId,
@@ -63,7 +63,7 @@ export async function createCrypto(request: FastifyRequest, reply: FastifyReply)
         },
       },
     });
-    
+
     return reply.code(201).send(crypto);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -79,16 +79,16 @@ export async function updateCrypto(request: FastifyRequest, reply: FastifyReply)
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
     const data = updateCryptoSchema.parse(request.body);
-    
+
     // Check ownership
     const existing = await prisma.crypto.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'Crypto asset not found' });
     }
-    
+
     const updateData: any = {};
     if (data.coinName) updateData.coinName = data.coinName;
     if (data.symbol) updateData.symbol = data.symbol;
@@ -97,7 +97,7 @@ export async function updateCrypto(request: FastifyRequest, reply: FastifyReply)
     if (data.currentPrice !== undefined) updateData.currentPrice = data.currentPrice;
     if (data.currentValue !== undefined) updateData.currentValue = data.currentValue;
     if (data.goalId !== undefined) updateData.goalId = data.goalId;
-    
+
     const crypto = await prisma.crypto.update({
       where: { id },
       data: updateData,
@@ -110,7 +110,7 @@ export async function updateCrypto(request: FastifyRequest, reply: FastifyReply)
         },
       },
     });
-    
+
     return reply.send(crypto);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -125,20 +125,20 @@ export async function deleteCrypto(request: FastifyRequest, reply: FastifyReply)
   try {
     const { id } = request.params as { id: string };
     const userId = (request.user as any).userId;
-    
+
     // Check ownership
     const existing = await prisma.crypto.findFirst({
       where: { id, userId },
     });
-    
+
     if (!existing) {
       return reply.code(404).send({ error: 'Crypto asset not found' });
     }
-    
+
     await prisma.crypto.delete({
       where: { id },
     });
-    
+
     return reply.send({ message: 'Crypto asset deleted successfully' });
   } catch (error) {
     console.error('Delete crypto error:', error);

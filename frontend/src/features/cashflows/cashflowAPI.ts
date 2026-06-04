@@ -77,9 +77,12 @@ export const cashflowAPI = createApi({
     },
   }),
   tagTypes: ['Cashflow'],
-  endpoints: (builder) => ({
-    getCashflows: builder.query<{ cashflows: Cashflow[] }, { month?: number; year?: number; type?: string; category?: string }>({
-      query: (params) => {
+  endpoints: builder => ({
+    getCashflows: builder.query<
+      { cashflows: Cashflow[] },
+      { month?: number; year?: number; type?: string; category?: string }
+    >({
+      query: params => {
         const queryParams = new URLSearchParams();
         if (params.month) queryParams.append('month', params.month.toString());
         if (params.year) queryParams.append('year', params.year.toString());
@@ -90,7 +93,7 @@ export const cashflowAPI = createApi({
       providesTags: ['Cashflow'],
     }),
     getCashflowSummary: builder.query<CashflowSummary, { month?: number; year?: number }>({
-      query: (params) => {
+      query: params => {
         const queryParams = new URLSearchParams();
         if (params.month) queryParams.append('month', params.month.toString());
         if (params.year) queryParams.append('year', params.year.toString());
@@ -99,7 +102,7 @@ export const cashflowAPI = createApi({
       providesTags: ['Cashflow'],
     }),
     getMonthlyTrend: builder.query<MonthlyTrend, { year?: number }>({
-      query: (params) => {
+      query: params => {
         const queryParams = new URLSearchParams();
         if (params.year) queryParams.append('year', params.year.toString());
         return `/trend?${queryParams.toString()}`;
@@ -107,14 +110,17 @@ export const cashflowAPI = createApi({
       providesTags: ['Cashflow'],
     }),
     createCashflow: builder.mutation<{ cashflow: Cashflow }, CreateCashflowRequest>({
-      query: (data) => ({
+      query: data => ({
         url: '/',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Cashflow'],
     }),
-    updateCashflow: builder.mutation<{ cashflow: Cashflow }, { id: string; data: UpdateCashflowRequest }>({
+    updateCashflow: builder.mutation<
+      { cashflow: Cashflow },
+      { id: string; data: UpdateCashflowRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -123,7 +129,7 @@ export const cashflowAPI = createApi({
       invalidatesTags: ['Cashflow'],
     }),
     deleteCashflow: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/${id}`,
         method: 'DELETE',
       }),

@@ -30,7 +30,7 @@ export const borrowedMoneyAPI = createApi({
   reducerPath: 'borrowedMoneyAPI',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:3000/api',
-    prepareHeaders: (headers) => {
+    prepareHeaders: headers => {
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
@@ -39,20 +39,23 @@ export const borrowedMoneyAPI = createApi({
     },
   }),
   tagTypes: ['BorrowedMoney'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getBorrowedMoney: builder.query<BorrowedMoney[], void>({
       query: () => '/borrowed-money',
       providesTags: ['BorrowedMoney'],
     }),
     createBorrowedMoney: builder.mutation<BorrowedMoney, CreateBorrowedMoneyData>({
-      query: (data) => ({
+      query: data => ({
         url: '/borrowed-money',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['BorrowedMoney'],
     }),
-    updateBorrowedMoney: builder.mutation<BorrowedMoney, { id: string; data: Partial<CreateBorrowedMoneyData> }>({
+    updateBorrowedMoney: builder.mutation<
+      BorrowedMoney,
+      { id: string; data: Partial<CreateBorrowedMoneyData> }
+    >({
       query: ({ id, data }) => ({
         url: `/borrowed-money/${id}`,
         method: 'PUT',
@@ -61,7 +64,7 @@ export const borrowedMoneyAPI = createApi({
       invalidatesTags: ['BorrowedMoney'],
     }),
     deleteBorrowedMoney: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/borrowed-money/${id}`,
         method: 'DELETE',
       }),

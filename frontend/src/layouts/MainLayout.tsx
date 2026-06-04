@@ -72,40 +72,48 @@ export default function MainLayout() {
     navigate('/login');
   };
 
-const drawer = (
-    <Box sx={{ 
-      height: '100%',
-      backgroundColor: '#0f172a',
-      pt: 3,
-      pb: 2,
-    }}>
+  const drawer = (
+    <Box
+      sx={{
+        height: '100%',
+        backgroundColor: '#0f172a',
+        pt: 3,
+        pb: 2,
+      }}
+    >
       {/* User Profile Section */}
-      <Box sx={{ 
-        px: 2.5, 
-        pb: 3,
-        mb: 2,
-        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-      }}>
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          gap: 1.5,
-        }}>
-          <Avatar sx={{ 
-            bgcolor: 'rgba(255, 255, 255, 0.2)',
-            color: 'white',
-            width: 45,
-            height: 45,
-            border: '2px solid rgba(255, 255, 255, 0.3)',
-            fontWeight: 700,
-            fontSize: '1.1rem',
-          }}>
+      <Box
+        sx={{
+          px: 2.5,
+          pb: 3,
+          mb: 2,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+          }}
+        >
+          <Avatar
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              width: 45,
+              height: 45,
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+            }}
+          >
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </Avatar>
           <Box>
-            <Typography 
-              variant="subtitle2" 
-              sx={{ 
+            <Typography
+              variant="subtitle2"
+              sx={{
                 color: 'white',
                 fontWeight: 700,
                 letterSpacing: 0.2,
@@ -113,9 +121,9 @@ const drawer = (
             >
               {user?.name}
             </Typography>
-            <Typography 
-              variant="caption" 
-              sx={{ 
+            <Typography
+              variant="caption"
+              sx={{
                 color: 'rgba(255, 255, 255, 0.8)',
                 fontSize: '0.75rem',
               }}
@@ -128,7 +136,7 @@ const drawer = (
 
       {/* Navigation Menu */}
       <List sx={{ px: 1.5 }}>
-        {menuItems.map((item) => (
+        {menuItems.map(item => (
           <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               selected={location.pathname === item.path}
@@ -141,9 +149,7 @@ const drawer = (
                 py: 1.5,
                 px: 2,
                 transition: 'all 0.2s ease',
-                color: location.pathname === item.path 
-                  ? 'white' 
-                  : 'rgba(255, 255, 255, 0.8)',
+                color: location.pathname === item.path ? 'white' : 'rgba(255, 255, 255, 0.8)',
                 '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.12)',
                   color: 'white',
@@ -168,8 +174,8 @@ const drawer = (
                 },
               }}
             >
-              <ListItemIcon 
-                sx={{ 
+              <ListItemIcon
+                sx={{
                   color: 'inherit',
                   minWidth: 40,
                   transition: 'transform 0.2s ease',
@@ -180,7 +186,7 @@ const drawer = (
               >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={item.text}
                 primaryTypographyProps={{
                   fontWeight: location.pathname === item.path ? 700 : 500,
@@ -194,21 +200,25 @@ const drawer = (
       </List>
 
       {/* Bottom Section */}
-      <Box sx={{ 
-        position: 'absolute',
-        bottom: 16,
-        left: 16,
-        right: 16,
-      }}>
-        <Box sx={{
-          p: 2,
-          borderRadius: 2,
-          background: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-        }}>
-          <Typography 
-            variant="caption" 
-            sx={{ 
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 16,
+          left: 16,
+          right: 16,
+        }}
+      >
+        <Box
+          sx={{
+            p: 2,
+            borderRadius: 2,
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
               color: 'rgba(255, 255, 255, 0.9)',
               display: 'block',
               fontWeight: 600,
@@ -217,9 +227,9 @@ const drawer = (
           >
             NidhiOne
           </Typography>
-          <Typography 
-            variant="caption" 
-            sx={{ 
+          <Typography
+            variant="caption"
+            sx={{
               color: 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.7rem',
             }}
@@ -235,11 +245,11 @@ const drawer = (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <CssBaseline />
       {/* Full-width AppBar */}
-      <AppBar 
-        position="fixed" 
+      <AppBar
+        position="fixed"
         elevation={0}
-        sx={{ 
-          zIndex: (theme) => theme.zIndex.drawer + 1, 
+        sx={{
+          zIndex: theme => theme.zIndex.drawer + 1,
           borderRadius: 0,
           backgroundColor: '#ffffff',
           color: 'text.primary',
@@ -257,33 +267,47 @@ const drawer = (
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" color="inherit" fontWeight="bold" sx={{ 
-            mr: 3,
-            fontSize: '1.3rem',
-            letterSpacing: 0.3,
-          }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            color="inherit"
+            fontWeight="bold"
+            sx={{
+              mr: 3,
+              fontSize: '1.3rem',
+              letterSpacing: 0.3,
+            }}
+          >
             NidhiOne
           </Typography>
-          <Typography variant="h6" noWrap component="div" sx={{ 
-            flexGrow: 1,
-            fontSize: '0.9rem',
-            fontWeight: 500,
-            color: 'text.secondary',
-          }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              flexGrow: 1,
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              color: 'text.secondary',
+            }}
+          >
             Wealth Management
           </Typography>
-          <IconButton 
-            onClick={handleMenuClick} 
-            sx={{ 
+          <IconButton
+            onClick={handleMenuClick}
+            sx={{
               p: 0.5,
               border: '1px solid #e2e8f0',
             }}
           >
-            <Avatar sx={{ 
-              bgcolor: '#1e3a8a',
-              color: 'white',
-              fontWeight: 700,
-            }}>
+            <Avatar
+              sx={{
+                bgcolor: '#1e3a8a',
+                color: 'white',
+                fontWeight: 700,
+              }}
+            >
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </Avatar>
           </IconButton>
@@ -328,10 +352,7 @@ const drawer = (
 
       <Box sx={{ display: 'flex', mt: 8 }}>
         {/* Sidebar below header */}
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        >
+        <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
           <Drawer
             variant="temporary"
             open={mobileOpen}
@@ -341,8 +362,8 @@ const drawer = (
             }}
             sx={{
               display: { xs: 'block', sm: 'none' },
-              '& .MuiDrawer-paper': { 
-                boxSizing: 'border-box', 
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
                 width: drawerWidth,
                 top: 64,
                 height: 'calc(100% - 64px)',
@@ -359,8 +380,8 @@ const drawer = (
             variant="permanent"
             sx={{
               display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': { 
-                boxSizing: 'border-box', 
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
                 width: drawerWidth,
                 top: 64,
                 height: 'calc(100% - 64px)',

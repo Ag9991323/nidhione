@@ -83,28 +83,43 @@ export default function Assets() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
-  const assetCounts = dashboardData?.assetCounts || { stocks: 0, mutualFunds: 0, fixedDeposits: 0, epfAccounts: 0, crypto: 0, licPolicies: 0 };
+  const assetCounts = dashboardData?.assetCounts || {
+    stocks: 0,
+    mutualFunds: 0,
+    fixedDeposits: 0,
+    epfAccounts: 0,
+    crypto: 0,
+    licPolicies: 0,
+  };
   const stocksValue = dashboardData?.stocksValue || 0;
   const mutualFundsValue = dashboardData?.mutualFundsValue || 0;
   const fixedDepositsValue = dashboardData?.fixedDepositsValue || 0;
   const epfValue = dashboardData?.epfValue || 0;
   const cryptoValue = dashboardData?.cryptoValue || 0;
   const licValue = dashboardData?.licValue || 0;
-  
+
   // Calculate lend money total (amount - amountReturned)
-  const lendMoneyValue = lendMoney.reduce((sum, item) => sum + (item.amount - item.amountReturned), 0);
+  const lendMoneyValue = lendMoney.reduce(
+    (sum, item) => sum + (item.amount - item.amountReturned),
+    0,
+  );
   const lendMoneyCount = lendMoney.length;
-  
+
   // Calculate real estate total
-  const realEstateValue = realEstates.reduce((sum, item) => sum + (item.currentValue || item.purchasePrice), 0);
+  const realEstateValue = realEstates.reduce(
+    (sum, item) => sum + (item.currentValue || item.purchasePrice),
+    0,
+  );
   const realEstateCount = realEstates.length;
-  
+
   // Calculate gold total
   const goldAssets = goldData?.goldAssets || [];
   const goldValue = goldAssets.reduce((sum, item) => sum + item.currentValue, 0);
@@ -241,7 +256,7 @@ export default function Assets() {
       </Typography>
 
       <Grid container spacing={3}>
-        {assetTypes.map((asset) => (
+        {assetTypes.map(asset => (
           <Grid item xs={12} sm={6} md={3} key={asset.title}>
             <AssetCard
               title={asset.title}

@@ -18,7 +18,12 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Add, Edit, Delete, Flag } from '@mui/icons-material';
-import { useGetGoalsQuery, useCreateGoalMutation, useUpdateGoalMutation, useDeleteGoalMutation } from './goalsAPI';
+import {
+  useGetGoalsQuery,
+  useCreateGoalMutation,
+  useUpdateGoalMutation,
+  useDeleteGoalMutation,
+} from './goalsAPI';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 
 export default function GoalsList() {
@@ -54,7 +59,7 @@ export default function GoalsList() {
     });
     setOpen(true);
   };
-  
+
   const handleClose = () => {
     setOpen(false);
     setEditingId(null);
@@ -153,7 +158,7 @@ export default function GoalsList() {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          {goals.map((goal) => (
+          {goals.map(goal => (
             <Grid item xs={12} md={6} lg={4} key={goal.id}>
               <Card>
                 <CardContent>
@@ -239,7 +244,7 @@ export default function GoalsList() {
               fullWidth
               label="Goal Name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               required
             />
             <TextField
@@ -247,7 +252,7 @@ export default function GoalsList() {
               label="Target Amount"
               type="number"
               value={formData.targetAmount}
-              onChange={(e) => setFormData({ ...formData, targetAmount: e.target.value })}
+              onChange={e => setFormData({ ...formData, targetAmount: e.target.value })}
               required
             />
             <TextField
@@ -255,7 +260,7 @@ export default function GoalsList() {
               label="Target Date"
               type="date"
               value={formData.targetDate}
-              onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, targetDate: e.target.value })}
               InputLabelProps={{ shrink: true }}
               required
             />
@@ -263,21 +268,23 @@ export default function GoalsList() {
               fullWidth
               label="Category"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={e => setFormData({ ...formData, category: e.target.value })}
               helperText="e.g., Retirement, Education, House"
             />
             <TextField
               fullWidth
               label="Description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               multiline
               rows={3}
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSaving}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isSaving}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} variant="contained" disabled={isSaving}>
             {isSaving ? 'Saving...' : editingId ? 'Update' : 'Add'}
           </Button>

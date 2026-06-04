@@ -1,5 +1,11 @@
 import { FastifyInstance } from 'fastify';
-import { getAllStocks, createStock, updateStock, deleteStock, searchStock } from '../controllers/stocks.controller';
+import {
+  getAllStocks,
+  createStock,
+  updateStock,
+  deleteStock,
+  searchStock,
+} from '../controllers/stocks.controller';
 
 export async function stocksRoutes(fastify: FastifyInstance) {
   fastify.get('/search', { onRequest: [fastify.authenticate] }, searchStock);
