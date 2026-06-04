@@ -14,7 +14,6 @@ import {
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 interface Props {
-  userId: string;
 }
 
 const TrackRecordChart: React.FC<Props> = () => {
